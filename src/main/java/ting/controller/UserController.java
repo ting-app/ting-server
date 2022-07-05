@@ -18,11 +18,11 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController extends BaseController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/")
+    @PostMapping
     public Response<UserDto> register(@RequestBody UserDto user) {
         if (user == null) {
             return new Response<>(new Error("user cannot be null"));
@@ -56,7 +56,7 @@ public class UserController {
             return new Response<>(new Error("password and confirm password has to be equal"));
         }
 
-        User currentUser = userRepository.findUserByNameExists(user.getName());
+        User currentUser = userRepository.findUserByName(user.getName());
 
         if (currentUser != null) {
             return new Response<>(new Error("duplicate user name"));
