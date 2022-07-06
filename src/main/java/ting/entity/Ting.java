@@ -7,7 +7,7 @@ import java.time.Instant;
 @Entity
 public class Ting extends BaseEntity {
     @Column
-    private long courseId;
+    private long programId;
 
     @Column
     private String title;
@@ -24,12 +24,12 @@ public class Ting extends BaseEntity {
     @Column
     private Instant createdAt;
 
-    public long getCourseId() {
-        return courseId;
+    public long getProgramId() {
+        return programId;
     }
 
-    public void setCourseId(long courseId) {
-        this.courseId = courseId;
+    public void setProgramId(long programId) {
+        this.programId = programId;
     }
 
     public String getTitle() {
