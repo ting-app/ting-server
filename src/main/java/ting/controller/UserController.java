@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ting.Constant;
 import ting.dto.Error;
-import ting.dto.NewUserDto;
 import ting.dto.Response;
+import ting.dto.UserCredential;
 import ting.dto.UserDto;
 import ting.entity.User;
 import ting.repository.UserRepository;
@@ -31,57 +31,57 @@ public class UserController extends BaseController {
     private RedisIndexedSessionRepository sessionRepository;
 
     @PostMapping
-    public Response<UserDto> register(@RequestBody NewUserDto newUser, HttpSession session) {
-        if (newUser == null) {
+    public Response<UserDto> register(@RequestBody UserCredential userCredential, HttpSession session) {
+        if (userCredential == null) {
             return new Response<>(new Error("user cannot be null"));
         }
 
-        if (StringUtils.isBlank(newUser.getName())) {
+        if (StringUtils.isBlank(userCredential.getName())) {
             return new Response<>(new Error("name cannot be empty"));
         }
 
-        if (newUser.getName().length() > 20) {
+        if (userCredential.getName().length() > 20) {
             return new Response<>(new Error("name cannot be greater than 20 chars"));
         }
 
-        if (StringUtils.isBlank(newUser.getPassword())) {
+        if (StringUtils.isBlank(userCredential.getPassword())) {
             return new Response<>(new Error("password cannot be empty"));
         }
 
-        if (newUser.getPassword().length() < 6) {
+        if (userCredential.getPassword().length() < 6) {
             return new Response<>(new Error("password cannot be less than 6 chars"));
         }
 
-        if (newUser.getPassword().length() > 20) {
+        if (userCredential.getPassword().length() > 20) {
             return new Response<>(new Error("password cannot be greater than 20 chars"));
         }
 
-        if (StringUtils.isBlank(newUser.getConfirmPassword())) {
+        if (StringUtils.isBlank(userCredential.getConfirmPassword())) {
             return new Response<>(new Error("confirm password cannot be empty"));
         }
 
-        if (!Objects.equals(newUser.getPassword(), newUser.getConfirmPassword())) {
+        if (!Objects.equals(userCredential.getPassword(), userCredential.getConfirmPassword())) {
             return new Response<>(new Error("password and confirm password has to be equal"));
         }
 
-        User currentUser = userRepository.findUserByName(newUser.getName());
+        User currentUser = userRepository.findUserByName(userCredential.getName());
 
         if (currentUser != null) {
             return new Response<>(new Error("duplicate user name"));
         }
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10, new SecureRandom());
-        String encryptedPassword = bCryptPasswordEncoder.encode(newUser.getPassword());
+        String encryptedPassword = bCryptPasswordEncoder.encode(userCredential.getPassword());
 
-        User user = new User();
-        user.setName(newUser.getName());
-        user.setEncryptedPassword(encryptedPassword);
+        User newUser = new User();
+        newUser.setName(userCredential.getName());
+        newUser.setEncryptedPassword(encryptedPassword);
 
-        userRepository.save(user);
+        userRepository.save(newUser);
 
         UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setName(user.getName());
+        userDto.setId(newUser.getId());
+        userDto.setName(newUser.getName());
 
         session.setAttribute(Constant.ME, userDto);
 
@@ -103,5 +103,35 @@ public class UserController extends BaseController {
         }
 
         return new Response<>(null);
+    }
+
+    @PostMapping("/login")
+    public Response<UserDto> login(@RequestBody UserCredential userCredential, HttpSession session) {
+        String message = "用户名或密码不正确";
+
+        if (userCredential == null || StringUtils.isBlank(userCredential.getName())
+                || StringUtils.isBlank(userCredential.getPassword())) {
+            return new Response<>(new Error(message));
+        }
+
+        User user = userRepository.findUserByName(userCredential.getName());
+
+        if (user == null) {
+            return new Response<>(new Error("用户名不存在"));
+        }
+
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+        if (!bCryptPasswordEncoder.matches(userCredential.getPassword(), user.getEncryptedPassword())) {
+            return new Response<>(new Error(message));
+        }
+
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setName(user.getName());
+
+        session.setAttribute(Constant.ME, userDto);
+
+        return new Response<>(userDto);
     }
 }

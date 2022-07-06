@@ -1,6 +1,6 @@
 package ting.dto;
 
-public class NewUserDto {
+public class UserCredential {
     private String name;
     private String password;
     private String confirmPassword;
