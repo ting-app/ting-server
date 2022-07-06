@@ -5,8 +5,6 @@ import java.io.Serializable;
 public class UserDto implements Serializable {
     private long id;
     private String name;
-    private String password;
-    private String confirmPassword;
 
     public long getId() {
         return id;
@@ -22,21 +20,5 @@ public class UserDto implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
     }
 }
