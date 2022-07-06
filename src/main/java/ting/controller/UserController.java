@@ -3,6 +3,7 @@ package ting.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,9 @@ import java.util.Objects;
 public class UserController extends BaseController {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RedisIndexedSessionRepository sessionRepository;
 
     @PostMapping
     public Response<UserDto> register(@RequestBody NewUserDto newUser, HttpSession session) {
@@ -87,5 +91,17 @@ public class UserController extends BaseController {
     @GetMapping("/me")
     public Response<UserDto> me(HttpSession session) {
         return new Response<>((UserDto) session.getAttribute(Constant.ME));
+    }
+
+    @PostMapping("/signOut")
+    public Response<Void> signOut(HttpSession session) {
+        UserDto user = (UserDto) session.getAttribute(Constant.ME);
+
+        if (user != null) {
+            session.invalidate();
+            sessionRepository.deleteById(session.getId());
+        }
+
+        return new Response<>(null);
     }
 }
