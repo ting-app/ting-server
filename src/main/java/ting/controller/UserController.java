@@ -13,6 +13,7 @@ import ting.dto.UserDto;
 import ting.entity.User;
 import ting.repository.UserRepository;
 
+import javax.servlet.http.HttpSession;
 import java.security.SecureRandom;
 import java.util.Objects;
 
@@ -23,7 +24,7 @@ public class UserController extends BaseController {
     private UserRepository userRepository;
 
     @PostMapping
-    public Response<UserDto> register(@RequestBody UserDto user) {
+    public Response<UserDto> register(@RequestBody UserDto user, HttpSession session) {
         if (user == null) {
             return new Response<>(new Error("user cannot be null"));
         }
@@ -72,6 +73,8 @@ public class UserController extends BaseController {
         userRepository.save(newUser);
 
         user.setId(newUser.getId());
+
+        session.setAttribute("me", user);
 
         return new Response<>(user);
     }

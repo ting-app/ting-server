@@ -10,3 +10,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+  session:
+    store-type: redis
+    redis:
+      save-mode: on_set_attribute
+      flush-mode: on_save
+      namespace: ting:session
+server:
+  servlet:
+    session:
+      timeout: 24h
