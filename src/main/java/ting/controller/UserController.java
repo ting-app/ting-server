@@ -19,6 +19,7 @@ import ting.repository.UserRepository;
 
 import javax.servlet.http.HttpSession;
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.Objects;
 
 @RestController
@@ -76,6 +77,7 @@ public class UserController extends BaseController {
         User newUser = new User();
         newUser.setName(userCredential.getName());
         newUser.setEncryptedPassword(encryptedPassword);
+        newUser.setCreatedAt(Instant.now());
 
         // TODO: in the rare case, two users may register with the same name at the same time
         userRepository.save(newUser);

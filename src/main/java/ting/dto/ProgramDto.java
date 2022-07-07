@@ -2,7 +2,7 @@ package ting.dto;
 
 public class ProgramDto {
     private long id;
-    private String name;
+    private String title;
     private String description;
     private int language;
 
@@ -14,12 +14,12 @@ public class ProgramDto {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {

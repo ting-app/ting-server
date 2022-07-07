@@ -2,11 +2,12 @@ package ting.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import java.time.Instant;
 
 @Entity
 public class Program extends BaseEntity {
     @Column
-    private String name;
+    private String title;
 
     @Column
     private String description;
@@ -17,12 +18,15 @@ public class Program extends BaseEntity {
     @Column
     private long createdBy;
 
-    public String getName() {
-        return name;
+    @Column
+    private Instant createdAt;
+
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -47,5 +51,13 @@ public class Program extends BaseEntity {
 
     public void setCreatedBy(long createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }
