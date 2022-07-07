@@ -33,41 +33,41 @@ public class UserController extends BaseController {
     @PostMapping
     public Response<UserDto> register(@RequestBody UserCredential userCredential, HttpSession session) {
         if (userCredential == null) {
-            return new Response<>(new Error("user cannot be null"));
+            return new Response<>(new Error("姓名不能为空"));
         }
 
         if (StringUtils.isBlank(userCredential.getName())) {
-            return new Response<>(new Error("name cannot be empty"));
+            return new Response<>(new Error("姓名不能为空"));
         }
 
         if (userCredential.getName().length() > 20) {
-            return new Response<>(new Error("name cannot be greater than 20 chars"));
+            return new Response<>(new Error("姓名不能超过20个字符"));
         }
 
         if (StringUtils.isBlank(userCredential.getPassword())) {
-            return new Response<>(new Error("password cannot be empty"));
+            return new Response<>(new Error("密码不能为空"));
         }
 
         if (userCredential.getPassword().length() < 6) {
-            return new Response<>(new Error("password cannot be less than 6 chars"));
+            return new Response<>(new Error("密码不能少于6个字符"));
         }
 
         if (userCredential.getPassword().length() > 20) {
-            return new Response<>(new Error("password cannot be greater than 20 chars"));
+            return new Response<>(new Error("密码不能超过20个字符"));
         }
 
         if (StringUtils.isBlank(userCredential.getConfirmPassword())) {
-            return new Response<>(new Error("confirm password cannot be empty"));
+            return new Response<>(new Error("确认密码不能为空"));
         }
 
         if (!Objects.equals(userCredential.getPassword(), userCredential.getConfirmPassword())) {
-            return new Response<>(new Error("password and confirm password has to be equal"));
+            return new Response<>(new Error("两次密码不一致"));
         }
 
         User currentUser = userRepository.findUserByName(userCredential.getName());
 
         if (currentUser != null) {
-            return new Response<>(new Error("duplicate user name"));
+            return new Response<>(new Error("用户名已存在"));
         }
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10, new SecureRandom());

@@ -12,6 +12,7 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                // TODO: it's better to keep allowed origins in application.yml
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5000")
                         .allowCredentials(true);
