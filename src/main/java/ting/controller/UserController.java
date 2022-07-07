@@ -77,6 +77,7 @@ public class UserController extends BaseController {
         newUser.setName(userCredential.getName());
         newUser.setEncryptedPassword(encryptedPassword);
 
+        // TODO: in the rare case, two users may register with the same name at the same time
         userRepository.save(newUser);
 
         UserDto userDto = new UserDto();
