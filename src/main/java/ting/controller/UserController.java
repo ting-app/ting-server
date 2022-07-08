@@ -32,7 +32,7 @@ public class UserController extends BaseController {
     private RedisIndexedSessionRepository sessionRepository;
 
     @PostMapping
-    public Response<UserDto> register(@RequestBody UserCredential userCredential, HttpSession session) {
+    public Response<UserDto> createUser(@RequestBody UserCredential userCredential, HttpSession session) {
         if (userCredential == null) {
             return new Response<>(new Error("姓名不能为空"));
         }
@@ -92,7 +92,7 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/me")
-    public Response<UserDto> me(HttpSession session) {
+    public Response<UserDto> getMe(HttpSession session) {
         return new Response<>((UserDto) session.getAttribute(Constant.ME));
     }
 

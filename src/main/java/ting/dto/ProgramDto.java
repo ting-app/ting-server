@@ -1,10 +1,14 @@
 package ting.dto;
 
+import java.time.Instant;
+
 public class ProgramDto {
     private long id;
     private String title;
     private String description;
     private int language;
+    private long createdBy;
+    private Instant createdAt;
 
     public long getId() {
         return id;
@@ -36,5 +40,21 @@ public class ProgramDto {
 
     public void setLanguage(int language) {
         this.language = language;
+    }
+
+    public long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }

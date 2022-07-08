@@ -2,6 +2,10 @@ package ting.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +29,7 @@ public class ProgramController extends BaseController {
 
     @PostMapping
     @LoginRequired
-    public Response<ProgramDto> create(@RequestBody ProgramDto program, @Me UserDto me) {
+    public Response<ProgramDto> createProgram(@RequestBody ProgramDto program, @Me UserDto me) {
         if (program == null) {
             return new Response<>(new Error("标题不能为空"));
         }
@@ -46,17 +50,39 @@ public class ProgramController extends BaseController {
             return new Response<>(new Error("描述不能超过200个字符"));
         }
 
+        Instant now = Instant.now();
         Program newProgram = new Program();
         newProgram.setTitle(program.getTitle());
         newProgram.setLanguage(program.getLanguage());
         newProgram.setDescription(program.getDescription());
         newProgram.setCreatedBy(me.getId());
-        newProgram.setCreatedAt(Instant.now());
+        newProgram.setCreatedAt(now);
 
         programRepository.save(newProgram);
 
         program.setId(newProgram.getId());
+        program.setCreatedBy(me.getId());
+        program.setCreatedAt(now);
 
         return new Response<>(program);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Response<ProgramDto>> getProgram(@PathVariable long id) {
+        Program program = programRepository.findById(id).orElse(null);
+
+        if (program == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        ProgramDto programDto = new ProgramDto();
+        programDto.setId(program.getId());
+        programDto.setTitle(program.getTitle());
+        programDto.setDescription(program.getDescription());
+        programDto.setLanguage(program.getLanguage());
+        programDto.setCreatedBy(program.getCreatedBy());
+        programDto.setCreatedAt(program.getCreatedAt());
+
+        return new ResponseEntity<>(new Response<>(programDto), HttpStatus.OK);
     }
 }
