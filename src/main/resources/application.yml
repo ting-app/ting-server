@@ -16,6 +16,10 @@ spring:
       save-mode: on_set_attribute
       flush-mode: on_save
       namespace: ting:session
+  data:
+    redis:
+      repositories:
+        enabled: false
 server:
   servlet:
     session:
