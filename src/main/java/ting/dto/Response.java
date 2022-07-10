@@ -2,6 +2,7 @@ package ting.dto;
 
 public class Response<T> {
     private T data;
+
     private ResponseError error;
 
     public Response(T data) {

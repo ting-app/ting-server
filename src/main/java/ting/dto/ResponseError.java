@@ -1,11 +1,11 @@
 package ting.dto;
 
 public class ResponseError {
+    private String message;
+
     public ResponseError(String message) {
         this.message = message;
     }
-
-    private String message;
 
     public String getMessage() {
         return message;

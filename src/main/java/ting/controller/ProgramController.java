@@ -1,6 +1,5 @@
 package ting.controller;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
-import ting.dto.ResponseError;
 import ting.dto.ProgramDto;
 import ting.dto.Response;
 import ting.dto.UserDto;
 import ting.entity.Program;
 import ting.repository.ProgramRepository;
 
+import javax.validation.Valid;
 import java.time.Instant;
 
 @RestController
@@ -29,27 +28,7 @@ public class ProgramController extends BaseController {
 
     @PostMapping
     @LoginRequired
-    public Response<ProgramDto> createProgram(@RequestBody ProgramDto programDto, @Me UserDto me) {
-        if (programDto == null) {
-            return new Response<>(new ResponseError("标题不能为空"));
-        }
-
-        if (StringUtils.isBlank(programDto.getTitle())) {
-            return new Response<>(new ResponseError("标题不能为空"));
-        }
-
-        if (programDto.getTitle().length() > 100) {
-            return new Response<>(new ResponseError("标题不能超过100个字符"));
-        }
-
-        if (StringUtils.isBlank(programDto.getDescription())) {
-            return new Response<>(new ResponseError("描述不能为空"));
-        }
-
-        if (programDto.getDescription().length() > 200) {
-            return new Response<>(new ResponseError("描述不能超过200个字符"));
-        }
-
+    public Response<ProgramDto> createProgram(@Valid @RequestBody ProgramDto programDto, @Me UserDto me) {
         Instant now = Instant.now();
         Program program = new Program();
         program.setTitle(programDto.getTitle());

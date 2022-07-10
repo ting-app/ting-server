@@ -2,7 +2,9 @@ package ting.dto;
 
 public class UserCredential {
     private String name;
+
     private String password;
+
     private String confirmPassword;
 
     public String getName() {

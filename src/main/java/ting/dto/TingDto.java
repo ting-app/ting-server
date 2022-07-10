@@ -1,15 +1,30 @@
 package ting.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.Instant;
 
 public class TingDto {
     private long id;
+
     private long programId;
+
+    @NotBlank(message = "标题不能为空")
+    @Size(max = 100, message = "标题不能超过100个字符")
     private String title;
+
+    @Size(max = 200, message = "描述不能超过200个字符")
     private String description;
+
+    @NotBlank(message = "资源文件不能为空")
     private String audioUrl;
+
+    @NotBlank(message = "内容不能为空")
+    @Size(max = 2000, message = "内容不能超过2000个字符")
     private String content;
+
     private Instant createdAt;
+
     private Instant updatedAt;
 
     public long getId() {
