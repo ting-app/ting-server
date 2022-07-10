@@ -2,13 +2,13 @@ package ting.dto;
 
 public class Response<T> {
     private T data;
-    private Error error;
+    private ResponseError error;
 
     public Response(T data) {
         this.data = data;
     }
 
-    public Response(Error error) {
+    public Response(ResponseError error) {
         this.error = error;
     }
 
@@ -20,11 +20,11 @@ public class Response<T> {
         this.data = data;
     }
 
-    public Error getError() {
+    public ResponseError getError() {
         return error;
     }
 
-    public void setError(Error error) {
+    public void setError(ResponseError error) {
         this.error = error;
     }
 }

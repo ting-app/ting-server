@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
-import ting.dto.Error;
+import ting.dto.ResponseError;
 import ting.dto.ProgramDto;
 import ting.dto.Response;
 import ting.dto.UserDto;
@@ -29,42 +29,44 @@ public class ProgramController extends BaseController {
 
     @PostMapping
     @LoginRequired
-    public Response<ProgramDto> createProgram(@RequestBody ProgramDto program, @Me UserDto me) {
-        if (program == null) {
-            return new Response<>(new Error("标题不能为空"));
+    public Response<ProgramDto> createProgram(@RequestBody ProgramDto programDto, @Me UserDto me) {
+        if (programDto == null) {
+            return new Response<>(new ResponseError("标题不能为空"));
         }
 
-        if (StringUtils.isBlank(program.getTitle())) {
-            return new Response<>(new Error("标题不能为空"));
+        if (StringUtils.isBlank(programDto.getTitle())) {
+            return new Response<>(new ResponseError("标题不能为空"));
         }
 
-        if (program.getTitle().length() > 100) {
-            return new Response<>(new Error("标题不能超过100个字符"));
+        if (programDto.getTitle().length() > 100) {
+            return new Response<>(new ResponseError("标题不能超过100个字符"));
         }
 
-        if (StringUtils.isBlank(program.getDescription())) {
-            return new Response<>(new Error("描述不能为空"));
+        if (StringUtils.isBlank(programDto.getDescription())) {
+            return new Response<>(new ResponseError("描述不能为空"));
         }
 
-        if (program.getDescription().length() > 200) {
-            return new Response<>(new Error("描述不能超过200个字符"));
+        if (programDto.getDescription().length() > 200) {
+            return new Response<>(new ResponseError("描述不能超过200个字符"));
         }
 
         Instant now = Instant.now();
-        Program newProgram = new Program();
-        newProgram.setTitle(program.getTitle());
-        newProgram.setLanguage(program.getLanguage());
-        newProgram.setDescription(program.getDescription());
-        newProgram.setCreatedBy(me.getId());
-        newProgram.setCreatedAt(now);
-
-        programRepository.save(newProgram);
-
-        program.setId(newProgram.getId());
+        Program program = new Program();
+        program.setTitle(programDto.getTitle());
+        program.setLanguage(programDto.getLanguage());
+        program.setDescription(programDto.getDescription());
         program.setCreatedBy(me.getId());
         program.setCreatedAt(now);
+        program.setUpdatedAt(now);
 
-        return new Response<>(program);
+        programRepository.save(program);
+
+        programDto.setId(program.getId());
+        programDto.setCreatedBy(me.getId());
+        programDto.setCreatedAt(now);
+        programDto.setUpdatedAt(now);
+
+        return new Response<>(programDto);
     }
 
     @GetMapping("/{id}")

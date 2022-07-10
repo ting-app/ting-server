@@ -24,6 +24,9 @@ public class Ting extends BaseEntity {
     @Column
     private Instant createdAt;
 
+    @Column
+    private Instant updatedAt;
+
     public long getProgramId() {
         return programId;
     }
@@ -70,5 +73,13 @@ public class Ting extends BaseEntity {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

@@ -1,7 +1,7 @@
 package ting.dto;
 
-public class Error {
-    public Error(String message) {
+public class ResponseError {
+    public ResponseError(String message) {
         this.message = message;
     }
 

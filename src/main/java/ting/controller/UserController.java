@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ting.Constant;
-import ting.dto.Error;
+import ting.dto.ResponseError;
 import ting.dto.Response;
 import ting.dto.UserCredential;
 import ting.dto.UserDto;
@@ -34,41 +34,41 @@ public class UserController extends BaseController {
     @PostMapping
     public Response<UserDto> createUser(@RequestBody UserCredential userCredential, HttpSession session) {
         if (userCredential == null) {
-            return new Response<>(new Error("姓名不能为空"));
+            return new Response<>(new ResponseError("姓名不能为空"));
         }
 
         if (StringUtils.isBlank(userCredential.getName())) {
-            return new Response<>(new Error("姓名不能为空"));
+            return new Response<>(new ResponseError("姓名不能为空"));
         }
 
         if (userCredential.getName().length() > 20) {
-            return new Response<>(new Error("姓名不能超过20个字符"));
+            return new Response<>(new ResponseError("姓名不能超过20个字符"));
         }
 
         if (StringUtils.isBlank(userCredential.getPassword())) {
-            return new Response<>(new Error("密码不能为空"));
+            return new Response<>(new ResponseError("密码不能为空"));
         }
 
         if (userCredential.getPassword().length() < 6) {
-            return new Response<>(new Error("密码不能少于6个字符"));
+            return new Response<>(new ResponseError("密码不能少于6个字符"));
         }
 
         if (userCredential.getPassword().length() > 20) {
-            return new Response<>(new Error("密码不能超过20个字符"));
+            return new Response<>(new ResponseError("密码不能超过20个字符"));
         }
 
         if (StringUtils.isBlank(userCredential.getConfirmPassword())) {
-            return new Response<>(new Error("确认密码不能为空"));
+            return new Response<>(new ResponseError("确认密码不能为空"));
         }
 
         if (!Objects.equals(userCredential.getPassword(), userCredential.getConfirmPassword())) {
-            return new Response<>(new Error("两次密码不一致"));
+            return new Response<>(new ResponseError("两次密码不一致"));
         }
 
         User currentUser = userRepository.findUserByName(userCredential.getName());
 
         if (currentUser != null) {
-            return new Response<>(new Error("用户名已存在"));
+            return new Response<>(new ResponseError("用户名已存在"));
         }
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10, new SecureRandom());
@@ -114,19 +114,19 @@ public class UserController extends BaseController {
 
         if (userCredential == null || StringUtils.isBlank(userCredential.getName())
                 || StringUtils.isBlank(userCredential.getPassword())) {
-            return new Response<>(new Error(message));
+            return new Response<>(new ResponseError(message));
         }
 
         User user = userRepository.findUserByName(userCredential.getName());
 
         if (user == null) {
-            return new Response<>(new Error("用户名不存在"));
+            return new Response<>(new ResponseError("用户名不存在"));
         }
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
         if (!bCryptPasswordEncoder.matches(userCredential.getPassword(), user.getEncryptedPassword())) {
-            return new Response<>(new Error(message));
+            return new Response<>(new ResponseError(message));
         }
 
         UserDto userDto = new UserDto();
