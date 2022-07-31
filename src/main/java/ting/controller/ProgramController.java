@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
 import ting.dto.ProgramDto;
-import ting.dto.Response;
 import ting.dto.UserDto;
 import ting.entity.Program;
 import ting.repository.ProgramRepository;
@@ -28,7 +27,7 @@ public class ProgramController extends BaseController {
 
     @PostMapping
     @LoginRequired
-    public Response<ProgramDto> createProgram(@Valid @RequestBody ProgramDto programDto, @Me UserDto me) {
+    public ResponseEntity<ProgramDto> createProgram(@Valid @RequestBody ProgramDto programDto, @Me UserDto me) {
         Instant now = Instant.now();
         Program program = new Program();
         program.setTitle(programDto.getTitle());
@@ -45,11 +44,11 @@ public class ProgramController extends BaseController {
         programDto.setCreatedAt(now);
         programDto.setUpdatedAt(now);
 
-        return new Response<>(programDto);
+        return new ResponseEntity<>(programDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<ProgramDto>> getProgram(@PathVariable long id) {
+    public ResponseEntity<ProgramDto> getProgram(@PathVariable long id) {
         Program program = programRepository.findById(id).orElse(null);
 
         if (program == null) {
@@ -64,6 +63,6 @@ public class ProgramController extends BaseController {
         programDto.setCreatedBy(program.getCreatedBy());
         programDto.setCreatedAt(program.getCreatedAt());
 
-        return new ResponseEntity<>(new Response<>(programDto), HttpStatus.OK);
+        return new ResponseEntity<>(programDto, HttpStatus.OK);
     }
 }

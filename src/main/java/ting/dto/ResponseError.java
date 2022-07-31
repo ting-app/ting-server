@@ -1,17 +1,33 @@
 package ting.dto;
 
 public class ResponseError {
-    private String message;
+    private Error error;
 
     public ResponseError(String message) {
-        this.message = message;
+        this.error = new Error(message);
     }
 
-    public String getMessage() {
-        return message;
+    public Error getError() {
+        return error;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setError(Error error) {
+        this.error = error;
+    }
+
+    public static class Error {
+        private String message;
+
+        public Error(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
     }
 }

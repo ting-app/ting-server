@@ -2,6 +2,8 @@ package ting.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ting.Constant;
-import ting.dto.Response;
 import ting.dto.ResponseError;
 import ting.dto.UserCredential;
 import ting.dto.UserDto;
@@ -33,15 +34,15 @@ public class UserController extends BaseController {
     private RedisIndexedSessionRepository sessionRepository;
 
     @PostMapping
-    public Response<UserDto> createUser(@Valid @RequestBody UserCredential userCredential, HttpSession session) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserCredential userCredential, HttpSession session) {
         if (!Objects.equals(userCredential.getPassword(), userCredential.getConfirmPassword())) {
-            return new Response<>(new ResponseError("两次密码不一致"));
+            return new ResponseEntity<>(new ResponseError("两次密码不一致"), HttpStatus.BAD_REQUEST);
         }
 
         User currentUser = userRepository.findUserByName(userCredential.getName());
 
         if (currentUser != null) {
-            return new Response<>(new ResponseError("用户名已存在"));
+            return new ResponseEntity<>(new ResponseError("用户名已存在"), HttpStatus.BAD_REQUEST);
         }
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10, new SecureRandom());
@@ -61,16 +62,16 @@ public class UserController extends BaseController {
 
         session.setAttribute(Constant.ME, userDto);
 
-        return new Response<>(userDto);
+        return new ResponseEntity<>(userDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/me")
-    public Response<UserDto> getMe(HttpSession session) {
-        return new Response<>((UserDto) session.getAttribute(Constant.ME));
+    public UserDto getMe(HttpSession session) {
+        return (UserDto) session.getAttribute(Constant.ME);
     }
 
     @PostMapping("/signOut")
-    public Response<Void> signOut(HttpSession session) {
+    public ResponseEntity<Void> signOut(HttpSession session) {
         UserDto user = (UserDto) session.getAttribute(Constant.ME);
 
         if (user != null) {
@@ -78,28 +79,28 @@ public class UserController extends BaseController {
             sessionRepository.deleteById(session.getId());
         }
 
-        return new Response<>(null);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public Response<UserDto> login(@RequestBody UserCredential userCredential, HttpSession session) {
+    public ResponseEntity<?> login(@RequestBody UserCredential userCredential, HttpSession session) {
         String message = "用户名或密码不正确";
 
         if (userCredential == null || StringUtils.isBlank(userCredential.getName())
                 || StringUtils.isBlank(userCredential.getPassword())) {
-            return new Response<>(new ResponseError(message));
+            return new ResponseEntity<>(new ResponseError(message), HttpStatus.BAD_REQUEST);
         }
 
         User user = userRepository.findUserByName(userCredential.getName());
 
         if (user == null) {
-            return new Response<>(new ResponseError("用户名不存在"));
+            return new ResponseEntity<>(new ResponseError("用户名不存在"), HttpStatus.NOT_FOUND);
         }
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
         if (!bCryptPasswordEncoder.matches(userCredential.getPassword(), user.getEncryptedPassword())) {
-            return new Response<>(new ResponseError(message));
+            return new ResponseEntity<>(new ResponseError(message), HttpStatus.BAD_REQUEST);
         }
 
         UserDto userDto = new UserDto();
@@ -108,6 +109,6 @@ public class UserController extends BaseController {
 
         session.setAttribute(Constant.ME, userDto);
 
-        return new Response<>(userDto);
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 }
