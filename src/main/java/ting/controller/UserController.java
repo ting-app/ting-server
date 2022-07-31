@@ -1,11 +1,11 @@
 package ting.controller;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,11 +17,13 @@ import ting.dto.UserCredential;
 import ting.dto.UserDto;
 import ting.entity.User;
 import ting.repository.UserRepository;
+import ting.validation.Login;
+import ting.validation.Register;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
@@ -33,7 +35,11 @@ public class UserController extends BaseController {
     private RedisIndexedSessionRepository sessionRepository;
 
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserCredential userCredential, HttpSession session) {
+    public ResponseEntity<?> createUser(@Validated({Register.class}) @RequestBody UserCredential userCredential, HttpSession session) {
+        if (!Objects.equals(userCredential.getPassword(), userCredential.getConfirmPassword())) {
+            return new ResponseEntity<>(new ResponseError("两次密码不一致"), HttpStatus.BAD_REQUEST);
+        }
+
         User currentUser = userRepository.findUserByName(userCredential.getName());
 
         if (currentUser != null) {
@@ -78,14 +84,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserCredential userCredential, HttpSession session) {
-        String message = "用户名或密码不正确";
-
-        if (userCredential == null || StringUtils.isBlank(userCredential.getName())
-                || StringUtils.isBlank(userCredential.getPassword())) {
-            return new ResponseEntity<>(new ResponseError(message), HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<?> login(@Validated({Login.class}) @RequestBody UserCredential userCredential, HttpSession session) {
         User user = userRepository.findUserByName(userCredential.getName());
 
         if (user == null) {
@@ -95,7 +94,7 @@ public class UserController extends BaseController {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
         if (!bCryptPasswordEncoder.matches(userCredential.getPassword(), user.getEncryptedPassword())) {
-            return new ResponseEntity<>(new ResponseError(message), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseError("用户名或密码不正确"), HttpStatus.BAD_REQUEST);
         }
 
         UserDto userDto = new UserDto();

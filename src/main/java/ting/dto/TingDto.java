@@ -19,8 +19,8 @@ public class TingDto {
     @NotBlank(message = "资源文件不能为空")
     private String audioUrl;
 
-    @NotBlank(message = "内容不能为空")
-    @Size(max = 2000, message = "内容不能超过2000个字符")
+    @NotBlank(message = "原文不能为空")
+    @Size(max = 2000, message = "原文不能超过2000个字符")
     private String content;
 
     private Instant createdAt;
