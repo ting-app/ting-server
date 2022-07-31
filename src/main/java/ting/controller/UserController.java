@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ting.Constant;
-import ting.dto.ResponseError;
 import ting.dto.Response;
+import ting.dto.ResponseError;
 import ting.dto.UserCredential;
 import ting.dto.UserDto;
 import ting.entity.User;
 import ting.repository.UserRepository;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Objects;
@@ -32,35 +33,7 @@ public class UserController extends BaseController {
     private RedisIndexedSessionRepository sessionRepository;
 
     @PostMapping
-    public Response<UserDto> createUser(@RequestBody UserCredential userCredential, HttpSession session) {
-        if (userCredential == null) {
-            return new Response<>(new ResponseError("姓名不能为空"));
-        }
-
-        if (StringUtils.isBlank(userCredential.getName())) {
-            return new Response<>(new ResponseError("姓名不能为空"));
-        }
-
-        if (userCredential.getName().length() > 20) {
-            return new Response<>(new ResponseError("姓名不能超过20个字符"));
-        }
-
-        if (StringUtils.isBlank(userCredential.getPassword())) {
-            return new Response<>(new ResponseError("密码不能为空"));
-        }
-
-        if (userCredential.getPassword().length() < 6) {
-            return new Response<>(new ResponseError("密码不能少于6个字符"));
-        }
-
-        if (userCredential.getPassword().length() > 20) {
-            return new Response<>(new ResponseError("密码不能超过20个字符"));
-        }
-
-        if (StringUtils.isBlank(userCredential.getConfirmPassword())) {
-            return new Response<>(new ResponseError("确认密码不能为空"));
-        }
-
+    public Response<UserDto> createUser(@Valid @RequestBody UserCredential userCredential, HttpSession session) {
         if (!Objects.equals(userCredential.getPassword(), userCredential.getConfirmPassword())) {
             return new Response<>(new ResponseError("两次密码不一致"));
         }
