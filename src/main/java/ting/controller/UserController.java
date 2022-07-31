@@ -22,7 +22,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.SecureRandom;
 import java.time.Instant;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
@@ -35,10 +34,6 @@ public class UserController extends BaseController {
 
     @PostMapping
     public ResponseEntity<?> createUser(@Valid @RequestBody UserCredential userCredential, HttpSession session) {
-        if (!Objects.equals(userCredential.getPassword(), userCredential.getConfirmPassword())) {
-            return new ResponseEntity<>(new ResponseError("两次密码不一致"), HttpStatus.BAD_REQUEST);
-        }
-
         User currentUser = userRepository.findUserByName(userCredential.getName());
 
         if (currentUser != null) {

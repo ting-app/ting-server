@@ -1,7 +1,9 @@
 package ting.dto;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 public class UserCredential {
     @NotBlank(message = "姓名不能为空")
@@ -37,5 +39,10 @@ public class UserCredential {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    @AssertTrue(message = "两次密码不一致")
+    public boolean isPasswordValid() {
+        return Objects.equals(this.password, this.confirmPassword);
     }
 }
