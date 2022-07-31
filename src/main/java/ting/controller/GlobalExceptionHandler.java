@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import ting.dto.ResponseError;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,5 +25,10 @@ public class GlobalExceptionHandler {
         ResponseError error = new ResponseError(message);
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<ResponseError> handleRuntimeException(Throwable e) {
+        return new ResponseEntity<>(new ResponseError("服务器异常"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
