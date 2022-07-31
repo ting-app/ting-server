@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/ting_test?serverTimezone=UTC
+    username: root
+    password: ${MYSQL_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  session:
+    store-type: redis
+    redis:
+      save-mode: on_set_attribute
+      flush-mode: on_save
+      namespace: ting:session
+  data:
+    redis:
+      repositories:
+        enabled: false
+server:
+  servlet:
+    session:
+      timeout: 24h
