@@ -27,3 +27,7 @@ server:
   servlet:
     session:
       timeout: 24h
+azure:
+  storage:
+    connectionString: ${AZURE_STORAGE_CONNECTION_STRING}
+    containerName: ${AZURE_STORAGE_CONTAINER_NAME:ting}
