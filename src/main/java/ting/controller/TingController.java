@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
@@ -21,7 +20,6 @@ import javax.validation.Valid;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/tings")
 public class TingController extends BaseController {
     @Autowired
     private TingRepository tingRepository;
@@ -29,7 +27,7 @@ public class TingController extends BaseController {
     @Autowired
     private ProgramRepository programRepository;
 
-    @PostMapping
+    @PostMapping("/tings")
     @LoginRequired
     public ResponseEntity<?> createTing(@Valid @RequestBody TingDto tingDto, @Me UserDto me) {
         Program program = programRepository.findById(tingDto.getProgramId()).orElse(null);

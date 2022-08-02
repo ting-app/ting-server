@@ -8,7 +8,6 @@ import com.azure.storage.common.sas.AccountSasSignatureValues;
 import com.azure.storage.common.sas.SasProtocol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.config.AzureBlobStorageConfig;
@@ -17,12 +16,11 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 
 @RestController
-@RequestMapping("/blobs")
 public class BlobController extends BaseController {
     @Autowired
     private AzureBlobStorageConfig azureBlobStorageConfig;
 
-    @GetMapping("/sas")
+    @GetMapping("/blobs/sas")
     @LoginRequired
     public String sas() {
         var blobServiceClient = new BlobServiceClientBuilder()

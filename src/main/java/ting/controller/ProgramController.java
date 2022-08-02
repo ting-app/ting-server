@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
@@ -20,12 +19,11 @@ import javax.validation.Valid;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/programs")
 public class ProgramController extends BaseController {
     @Autowired
     private ProgramRepository programRepository;
 
-    @PostMapping
+    @PostMapping("/programs")
     @LoginRequired
     public ResponseEntity<ProgramDto> createProgram(@Valid @RequestBody ProgramDto programDto, @Me UserDto me) {
         Instant now = Instant.now();
@@ -47,7 +45,7 @@ public class ProgramController extends BaseController {
         return new ResponseEntity<>(programDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/programs/{id}")
     public ResponseEntity<ProgramDto> getProgram(@PathVariable long id) {
         Program program = programRepository.findById(id).orElse(null);
 
