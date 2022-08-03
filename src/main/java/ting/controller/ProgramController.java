@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
 import ting.dto.ProgramDto;
+import ting.dto.ResponseError;
 import ting.dto.UserDto;
 import ting.entity.Program;
 import ting.repository.ProgramRepository;
@@ -46,11 +47,11 @@ public class ProgramController extends BaseController {
     }
 
     @GetMapping("/programs/{id}")
-    public ResponseEntity<ProgramDto> getProgram(@PathVariable long id) {
+    public ResponseEntity<?> getProgram(@PathVariable long id) {
         Program program = programRepository.findById(id).orElse(null);
 
         if (program == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.NOT_FOUND);
         }
 
         ProgramDto programDto = new ProgramDto();

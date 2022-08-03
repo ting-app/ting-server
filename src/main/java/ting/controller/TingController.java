@@ -3,6 +3,8 @@ package ting.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,5 +59,25 @@ public class TingController extends BaseController {
         tingDto.setUpdatedAt(now);
 
         return new ResponseEntity<>(tingDto, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/tings/{id}")
+    @LoginRequired
+    public ResponseEntity<?> deleteTing(@PathVariable long id, @Me UserDto me) {
+        Ting ting = tingRepository.findById(id).orElse(null);
+
+        if (ting == null) {
+            return new ResponseEntity<>(new ResponseError("听力不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        Program program = programRepository.findById(ting.getProgramId()).orElse(null);
+
+        if (program != null && me.getId() != program.getCreatedBy()) {
+            return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
+        }
+
+        tingRepository.delete(ting);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
