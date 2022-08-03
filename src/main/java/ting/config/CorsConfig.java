@@ -15,6 +15,7 @@ public class CorsConfig {
                 // TODO: it's better to keep allowed origins in application.yml
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5000")
+                        .allowedMethods("GET", "PUT", "POST", "DELETE", "PATCH")
                         .allowCredentials(true);
             }
         };
