@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +22,8 @@ import ting.repository.TingRepository;
 
 import javax.validation.Valid;
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class TingController extends BaseController {
@@ -117,5 +120,30 @@ public class TingController extends BaseController {
         tingDto.setUpdatedAt(now);
 
         return new ResponseEntity<>(tingDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/programs/{programId}/tings")
+    public ResponseEntity<?> getTings(@PathVariable long programId) {
+        Program program = programRepository.findById(programId).orElse(null);
+
+        if (program == null) {
+            return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        List<Ting> tings = tingRepository.findByProgramId(programId);
+        List<TingDto> tingDtos = tings.stream()
+                .map(ting -> {
+                    TingDto tingDto = new TingDto();
+                    tingDto.setId(ting.getId());
+                    tingDto.setProgramId(ting.getProgramId());
+                    tingDto.setTitle(ting.getTitle());
+                    tingDto.setDescription(ting.getDescription());
+                    tingDto.setUpdatedAt(ting.getUpdatedAt());
+
+                    return tingDto;
+                })
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(tingDtos, HttpStatus.OK);
     }
 }

@@ -18,7 +18,7 @@ public class Ting extends BaseEntity {
     @Column
     private String audioUrl;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String content;
 
     @Column
