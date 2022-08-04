@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
@@ -79,5 +80,42 @@ public class TingController extends BaseController {
         tingRepository.delete(ting);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/tings/{id}")
+    @LoginRequired
+    public ResponseEntity<?> updateTing(@PathVariable long id, @Valid @RequestBody TingDto tingDto, @Me UserDto me) {
+        if (id != tingDto.getId()) {
+            return new ResponseEntity<>(new ResponseError("听力 id 和请求路径中的 id 不一致"), HttpStatus.BAD_REQUEST);
+        }
+
+        Ting ting = tingRepository.findById(id).orElse(null);
+
+        if (ting == null) {
+            return new ResponseEntity<>(new ResponseError("听力不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        Program program = programRepository.findById(ting.getProgramId()).orElse(null);
+
+        if (program != null && me.getId() != program.getCreatedBy()) {
+            return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
+        }
+
+        if (tingDto.getProgramId() != ting.getProgramId()) {
+            return new ResponseEntity<>(new ResponseError("听力所属的节目不一致"), HttpStatus.FORBIDDEN);
+        }
+
+        Instant now = Instant.now();
+        ting.setTitle(tingDto.getTitle());
+        ting.setDescription(tingDto.getDescription());
+        ting.setContent(tingDto.getContent());
+        ting.setAudioUrl(tingDto.getAudioUrl());
+        ting.setUpdatedAt(now);
+
+        tingRepository.save(ting);
+
+        tingDto.setUpdatedAt(now);
+
+        return new ResponseEntity<>(tingDto, HttpStatus.OK);
     }
 }
