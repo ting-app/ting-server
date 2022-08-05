@@ -122,6 +122,27 @@ public class TingController extends BaseController {
         return new ResponseEntity<>(tingDto, HttpStatus.OK);
     }
 
+    @GetMapping("/tings/{id}")
+    public ResponseEntity<?> getTing(@PathVariable long id) {
+        Ting ting = tingRepository.findById(id).orElse(null);
+
+        if (ting == null) {
+            return new ResponseEntity<>(new ResponseError("听力不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        TingDto tingDto = new TingDto();
+        tingDto.setId(ting.getId());
+        tingDto.setProgramId(ting.getProgramId());
+        tingDto.setTitle(ting.getTitle());
+        tingDto.setDescription(ting.getDescription());
+        tingDto.setContent(ting.getContent());
+        tingDto.setAudioUrl(ting.getAudioUrl());
+        tingDto.setCreatedAt(ting.getCreatedAt());
+        tingDto.setUpdatedAt(ting.getUpdatedAt());
+
+        return new ResponseEntity<>(tingDto, HttpStatus.OK);
+    }
+
     @GetMapping("/programs/{programId}/tings")
     public ResponseEntity<?> getTings(@PathVariable long programId) {
         Program program = programRepository.findById(programId).orElse(null);
@@ -138,6 +159,7 @@ public class TingController extends BaseController {
                     tingDto.setProgramId(ting.getProgramId());
                     tingDto.setTitle(ting.getTitle());
                     tingDto.setDescription(ting.getDescription());
+                    tingDto.setCreatedAt(ting.getCreatedAt());
                     tingDto.setUpdatedAt(ting.getUpdatedAt());
 
                     return tingDto;

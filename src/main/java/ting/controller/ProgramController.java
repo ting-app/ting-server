@@ -37,6 +37,7 @@ public class ProgramController extends BaseController {
                     programDto.setDescription(program.getDescription());
                     programDto.setLanguage(program.getLanguage());
                     programDto.setCreatedAt(program.getCreatedAt());
+                    programDto.setUpdatedAt(program.getUpdatedAt());
 
                     return programDto;
                 })
