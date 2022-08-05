@@ -18,11 +18,32 @@ import ting.repository.ProgramRepository;
 
 import javax.validation.Valid;
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ProgramController extends BaseController {
     @Autowired
     private ProgramRepository programRepository;
+
+    @GetMapping("/programs")
+    public List<ProgramDto> getPrograms() {
+        List<Program> programs = programRepository.findAll();
+        List<ProgramDto> programDtos = programs.stream()
+                .map(program -> {
+                    ProgramDto programDto = new ProgramDto();
+                    programDto.setId(program.getId());
+                    programDto.setTitle(program.getTitle());
+                    programDto.setDescription(program.getDescription());
+                    programDto.setLanguage(program.getLanguage());
+                    programDto.setCreatedAt(program.getCreatedAt());
+
+                    return programDto;
+                })
+                .collect(Collectors.toList());
+
+        return programDtos;
+    }
 
     @PostMapping("/programs")
     @LoginRequired
