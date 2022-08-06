@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
@@ -27,8 +28,10 @@ public class ProgramController extends BaseController {
     private ProgramRepository programRepository;
 
     @GetMapping("/programs")
-    public List<ProgramDto> getPrograms() {
-        List<Program> programs = programRepository.findAll();
+    public List<ProgramDto> getPrograms(@RequestParam(required = false) Integer language) {
+        List<Program> programs = (language != null && language > 0)
+                ? programRepository.findByLanguage(language)
+                : programRepository.findAll();
         List<ProgramDto> programDtos = programs.stream()
                 .map(program -> {
                     ProgramDto programDto = new ProgramDto();
