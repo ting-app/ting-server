@@ -31,3 +31,5 @@ azure:
   storage:
     connectionString: ${AZURE_STORAGE_CONNECTION_STRING}
     containerName: ${AZURE_STORAGE_CONTAINER_NAME:ting}
+    readExpiryTimeInMinutes: ${AZURE_STORAGE_READ_EXPIRY_TIME_IN_MINUTES:30}
+    writeExpiryTimeInMinutes: ${AZURE_STORAGE_WRITE_EXPIRY_TIME_IN_MINUTES:5}

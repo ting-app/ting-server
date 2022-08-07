@@ -12,6 +12,10 @@ public class AzureBlobStorageConfig {
 
     private String containerName;
 
+    private int readExpiryTimeInMinutes;
+
+    private int writeExpiryTimeInMinutes;
+
     public String getConnectionString() {
         return connectionString;
     }
@@ -26,5 +30,21 @@ public class AzureBlobStorageConfig {
 
     public void setContainerName(String containerName) {
         this.containerName = containerName;
+    }
+
+    public int getReadExpiryTimeInMinutes() {
+        return readExpiryTimeInMinutes;
+    }
+
+    public void setReadExpiryTimeInMinutes(int readExpiryTimeInMinutes) {
+        this.readExpiryTimeInMinutes = readExpiryTimeInMinutes;
+    }
+
+    public int getWriteExpiryTimeInMinutes() {
+        return writeExpiryTimeInMinutes;
+    }
+
+    public void setWriteExpiryTimeInMinutes(int writeExpiryTimeInMinutes) {
+        this.writeExpiryTimeInMinutes = writeExpiryTimeInMinutes;
     }
 }
