@@ -19,6 +19,8 @@ import ting.entity.Program;
 import ting.entity.Ting;
 import ting.repository.ProgramRepository;
 import ting.repository.TingRepository;
+import ting.service.AzureBlobStorageService;
+import ting.service.BlobSas;
 
 import javax.validation.Valid;
 import java.time.Instant;
@@ -32,6 +34,9 @@ public class TingController extends BaseController {
 
     @Autowired
     private ProgramRepository programRepository;
+
+    @Autowired
+    private AzureBlobStorageService azureBlobStorageService;
 
     @PostMapping("/tings")
     @LoginRequired
@@ -130,13 +135,16 @@ public class TingController extends BaseController {
             return new ResponseEntity<>(new ResponseError("听力不存在"), HttpStatus.NOT_FOUND);
         }
 
+        BlobSas blobSas = azureBlobStorageService.generateSas(AzureBlobStorageService.READ_PERMISSION);
+        String audioUrl = ting.getAudioUrl() + "?" + blobSas.getSas();
+
         TingDto tingDto = new TingDto();
         tingDto.setId(ting.getId());
         tingDto.setProgramId(ting.getProgramId());
         tingDto.setTitle(ting.getTitle());
         tingDto.setDescription(ting.getDescription());
         tingDto.setContent(ting.getContent());
-        tingDto.setAudioUrl(ting.getAudioUrl());
+        tingDto.setAudioUrl(audioUrl);
         tingDto.setCreatedAt(ting.getCreatedAt());
         tingDto.setUpdatedAt(ting.getUpdatedAt());
 
