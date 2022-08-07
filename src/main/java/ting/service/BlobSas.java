@@ -1,4 +1,4 @@
-package ting.dto;
+package ting.service;
 
 public class BlobSas {
     private String containerUrl;
