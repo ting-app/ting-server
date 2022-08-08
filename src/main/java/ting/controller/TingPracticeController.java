@@ -41,6 +41,7 @@ public class TingPracticeController extends BaseController {
         tingPractice.setTingId(tingPracticeDto.getTingId());
         tingPractice.setContent(tingPracticeDto.getContent());
         tingPractice.setScore(tingPracticeDto.getScore());
+        tingPractice.setTimeCostInSeconds(tingPracticeDto.getTimeCostInSeconds());
         tingPractice.setCreatedAt(Instant.now());
 
         tingPracticeRepository.save(tingPractice);

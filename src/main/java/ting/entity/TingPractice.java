@@ -19,6 +19,9 @@ public class TingPractice extends BaseEntity {
     private float score;
 
     @Column
+    private long timeCostInSeconds;
+
+    @Column
     private Instant createdAt;
 
     public long getUserId() {
@@ -51,6 +54,14 @@ public class TingPractice extends BaseEntity {
 
     public void setScore(float score) {
         this.score = score;
+    }
+
+    public long getTimeCostInSeconds() {
+        return timeCostInSeconds;
+    }
+
+    public void setTimeCostInSeconds(long timeCostInSeconds) {
+        this.timeCostInSeconds = timeCostInSeconds;
     }
 
     public Instant getCreatedAt() {
