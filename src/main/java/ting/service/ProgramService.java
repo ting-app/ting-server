@@ -5,6 +5,7 @@ import ting.entity.Program;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -17,7 +18,7 @@ public class ProgramService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<Program> findAll(Integer language) {
+    public List<Program> findAll(Integer language, Integer createdBy) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Program> criteriaQuery = criteriaBuilder.createQuery(Program.class);
         Root<Program> programRoot = criteriaQuery.from(Program.class);
@@ -27,9 +28,15 @@ public class ProgramService {
             predicates.add(criteriaBuilder.equal(programRoot.get("language"), language));
         }
 
-        criteriaQuery.select(programRoot)
-                .where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+        if (createdBy != null) {
+            predicates.add(criteriaBuilder.equal(programRoot.get("createdBy"), createdBy));
+        }
 
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        criteriaQuery.select(programRoot)
+                .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+
+        TypedQuery<Program> query = entityManager.createQuery(criteriaQuery);
+
+        return query.getResultList();
     }
 }

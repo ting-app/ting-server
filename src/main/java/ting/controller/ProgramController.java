@@ -32,8 +32,8 @@ public class ProgramController extends BaseController {
     private ProgramService programService;
 
     @GetMapping("/programs")
-    public List<ProgramDto> getPrograms(@RequestParam(required = false) Integer language) {
-        List<Program> programs = programService.findAll(language);
+    public List<ProgramDto> getPrograms(@RequestParam(required = false) Integer language, @RequestParam(required = false) Integer createdBy) {
+        List<Program> programs = programService.findAll(language, createdBy);
         List<ProgramDto> programDtos = programs.stream()
                 .map(program -> {
                     ProgramDto programDto = new ProgramDto();
