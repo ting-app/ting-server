@@ -16,6 +16,7 @@ import ting.dto.ResponseError;
 import ting.dto.UserDto;
 import ting.entity.Program;
 import ting.repository.ProgramRepository;
+import ting.service.ProgramService;
 
 import javax.validation.Valid;
 import java.time.Instant;
@@ -27,11 +28,12 @@ public class ProgramController extends BaseController {
     @Autowired
     private ProgramRepository programRepository;
 
+    @Autowired
+    private ProgramService programService;
+
     @GetMapping("/programs")
     public List<ProgramDto> getPrograms(@RequestParam(required = false) Integer language) {
-        List<Program> programs = (language != null && language > 0)
-                ? programRepository.findByLanguage(language)
-                : programRepository.findAll();
+        List<Program> programs = programService.findAll(language);
         List<ProgramDto> programDtos = programs.stream()
                 .map(program -> {
                     ProgramDto programDto = new ProgramDto();
