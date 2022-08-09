@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
@@ -151,8 +152,8 @@ public class TingController extends BaseController {
         return new ResponseEntity<>(tingDto, HttpStatus.OK);
     }
 
-    @GetMapping("/programs/{programId}/tings")
-    public ResponseEntity<?> getTings(@PathVariable long programId) {
+    @GetMapping("/tings")
+    public ResponseEntity<?> getTings(@RequestParam long programId) {
         Program program = programRepository.findById(programId).orElse(null);
 
         if (program == null) {
