@@ -16,11 +16,11 @@ import static ting.service.AzureBlobStorageService.READ_PERMISSION;
 import static ting.service.AzureBlobStorageService.WRITE_PERMISSION;
 
 @RestController
-public class BlobController extends BaseController {
+public class AzureBlobStorageController extends BaseController {
     @Autowired
     private AzureBlobStorageService azureBlobStorageService;
 
-    @GetMapping("/blobs/sas")
+    @GetMapping("/azureBlobs/sas")
     public ResponseEntity<?> sas(@RequestParam String permission) {
         // Currently only supports read/write permission
         if (!Objects.equals(READ_PERMISSION, permission) && !Objects.equals(WRITE_PERMISSION, permission)) {
