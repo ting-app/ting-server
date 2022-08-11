@@ -3,6 +3,7 @@ package ting.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,5 +91,23 @@ public class ProgramController extends BaseController {
         programDto.setCreatedAt(program.getCreatedAt());
 
         return new ResponseEntity<>(programDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/programs/{id}")
+    @LoginRequired
+    public ResponseEntity<?> deleteProgram(@PathVariable long id, @Me UserDto me) {
+        Program program = programRepository.findById(id).orElse(null);
+
+        if (program == null) {
+            return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        if (me.getId() != program.getCreatedBy()) {
+            return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
+        }
+
+        programService.deleteById(id);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

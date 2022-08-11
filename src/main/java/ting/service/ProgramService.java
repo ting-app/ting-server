@@ -1,7 +1,11 @@
 package ting.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ting.entity.Program;
+import ting.repository.ProgramRepository;
+import ting.repository.TingRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,6 +21,12 @@ import java.util.List;
 public class ProgramService {
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private ProgramRepository programRepository;
+
+    @Autowired
+    private TingRepository tingRepository;
 
     public List<Program> findAll(Integer language, Integer createdBy) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -38,5 +48,11 @@ public class ProgramService {
         TypedQuery<Program> query = entityManager.createQuery(criteriaQuery);
 
         return query.getResultList();
+    }
+
+    @Transactional
+    public void deleteById(long id) {
+        programRepository.deleteById(id);
+        tingRepository.deleteByProgramId(id);
     }
 }
