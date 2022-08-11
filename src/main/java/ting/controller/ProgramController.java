@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -109,5 +110,32 @@ public class ProgramController extends BaseController {
         programService.deleteById(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/programs/{id}")
+    @LoginRequired
+    public ResponseEntity<?> updateProgram(@PathVariable long id, @Valid @RequestBody ProgramDto programDto, @Me UserDto me) {
+        Program program = programRepository.findById(id).orElse(null);
+
+        if (program == null) {
+            return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        if (me.getId() != program.getCreatedBy()) {
+            return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
+        }
+
+        Instant now = Instant.now();
+        program.setTitle(programDto.getTitle());
+        program.setLanguage(programDto.getLanguage());
+        program.setDescription(programDto.getDescription());
+        program.setUpdatedAt(now);
+
+        programDto.setId(id);
+        programDto.setUpdatedAt(now);
+
+        programRepository.save(program);
+
+        return new ResponseEntity<>(programDto, HttpStatus.OK);
     }
 }

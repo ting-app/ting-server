@@ -94,10 +94,6 @@ public class TingController extends BaseController {
     @PutMapping("/tings/{id}")
     @LoginRequired
     public ResponseEntity<?> updateTing(@PathVariable long id, @Valid @RequestBody TingDto tingDto, @Me UserDto me) {
-        if (id != tingDto.getId()) {
-            return new ResponseEntity<>(new ResponseError("听力 id 和请求路径中的 id 不一致"), HttpStatus.BAD_REQUEST);
-        }
-
         Ting ting = tingRepository.findById(id).orElse(null);
 
         if (ting == null) {
@@ -123,6 +119,7 @@ public class TingController extends BaseController {
 
         tingRepository.save(ting);
 
+        tingDto.setId(id);
         tingDto.setUpdatedAt(now);
 
         return new ResponseEntity<>(tingDto, HttpStatus.OK);
