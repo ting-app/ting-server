@@ -165,6 +165,8 @@ public class TingController extends BaseController {
                     tingDto.setProgramId(ting.getProgramId());
                     tingDto.setTitle(ting.getTitle());
                     tingDto.setDescription(ting.getDescription());
+                    tingDto.setAudioUrl(ting.getAudioUrl());
+                    tingDto.setContent(ting.getContent());
                     tingDto.setCreatedAt(ting.getCreatedAt());
                     tingDto.setUpdatedAt(ting.getUpdatedAt());
 
