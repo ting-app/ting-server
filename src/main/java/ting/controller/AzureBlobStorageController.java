@@ -13,7 +13,7 @@ import ting.service.BlobSas;
 import java.util.Objects;
 
 import static ting.service.AzureBlobStorageService.READ_PERMISSION;
-import static ting.service.AzureBlobStorageService.WRITE_PERMISSION;
+import static ting.service.AzureBlobStorageService.CREATE_PERMISSION;
 
 @RestController
 public class AzureBlobStorageController extends BaseController {
@@ -23,7 +23,7 @@ public class AzureBlobStorageController extends BaseController {
     @GetMapping("/azureBlobs/sas")
     public ResponseEntity<?> sas(@RequestParam String permission) {
         // Currently only supports read/write permission
-        if (!Objects.equals(READ_PERMISSION, permission) && !Objects.equals(WRITE_PERMISSION, permission)) {
+        if (!Objects.equals(READ_PERMISSION, permission) && !Objects.equals(CREATE_PERMISSION, permission)) {
             return new ResponseEntity<>(new ResponseError("不支持的权限类型"), HttpStatus.BAD_REQUEST);
         }
 
