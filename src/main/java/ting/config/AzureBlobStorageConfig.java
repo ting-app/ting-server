@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "azure.storage")
+@ConfigurationProperties(prefix = "ting.azure.storage")
 public class AzureBlobStorageConfig {
     private String connectionString;
 
