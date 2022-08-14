@@ -10,6 +10,9 @@ public class User extends BaseEntity {
     private String name;
 
     @Column
+    private String email;
+
+    @Column
     private String encryptedPassword;
 
     @Column
@@ -21,6 +24,14 @@ public class User extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getEncryptedPassword() {

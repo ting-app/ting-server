@@ -1,21 +1,21 @@
 package ting.dto;
 
-import ting.validation.Login;
-import ting.validation.Register;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-public class UserCredential {
-    @NotBlank(message = "姓名不能为空", groups = {Register.class, Login.class})
-    @Size(max = 20, message = "姓名不能超过20个字符", groups = {Register.class})
+public class UserRegisterRequest {
+    @NotBlank(message = "姓名不能为空")
+    @Size(max = 20, message = "姓名不能超过20个字符")
     private String name;
 
-    @NotBlank(message = "密码不能为空", groups = {Register.class, Login.class})
-    @Size(min = 6, max = 20, message = "密码长度必须在6到20个字符之间", groups = {Register.class})
+    @NotBlank(message = "邮箱地址不能为空")
+    private String email;
+
+    @NotBlank(message = "密码不能为空")
+    @Size(min = 6, max = 20, message = "密码长度必须在6到20个字符之间")
     private String password;
 
-    @NotBlank(message = "确认密码不能为空", groups = {Register.class})
+    @NotBlank(message = "确认密码不能为空")
     private String confirmPassword;
 
     public String getName() {
@@ -24,6 +24,14 @@ public class UserCredential {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

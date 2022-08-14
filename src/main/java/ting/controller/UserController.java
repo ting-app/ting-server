@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,17 +14,17 @@ import ting.annotation.Me;
 import ting.config.TingConfig;
 import ting.dto.ChangePasswordRequest;
 import ting.dto.ResponseError;
-import ting.dto.UserCredential;
 import ting.dto.UserDto;
+import ting.dto.UserRegisterRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
-import ting.validation.Register;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @RestController
 public class UserController extends BaseController {
@@ -35,23 +34,27 @@ public class UserController extends BaseController {
     @Autowired
     private TingConfig tingConfig;
 
+    private final Pattern emailPattern = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
     @PostMapping("/users")
-    public ResponseEntity<?> createUser(@Validated({Register.class}) @RequestBody UserCredential userCredential, HttpSession session) {
-        if (!Objects.equals(userCredential.getPassword(), userCredential.getConfirmPassword())) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest, HttpSession session) {
+        if (!Objects.equals(userRegisterRequest.getPassword(), userRegisterRequest.getConfirmPassword())) {
             return new ResponseEntity<>(new ResponseError("两次密码不一致"), HttpStatus.BAD_REQUEST);
         }
 
-        User currentUser = userRepository.findUserByName(userCredential.getName());
+        User userByName = userRepository.findByName(userRegisterRequest.getName());
+        User userByEmail = userRepository.findByEmail(userRegisterRequest.getEmail());
 
-        if (currentUser != null) {
-            return new ResponseEntity<>(new ResponseError("用户名已存在"), HttpStatus.BAD_REQUEST);
+        if (userByName != null || userByEmail != null) {
+            return new ResponseEntity<>(new ResponseError("用户名或邮箱地址已存在"), HttpStatus.BAD_REQUEST);
         }
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(tingConfig.getPasswordStrength(), new SecureRandom());
-        String encryptedPassword = bCryptPasswordEncoder.encode(userCredential.getPassword());
+        String encryptedPassword = bCryptPasswordEncoder.encode(userRegisterRequest.getPassword());
 
         User newUser = new User();
-        newUser.setName(userCredential.getName());
+        newUser.setName(userRegisterRequest.getName());
+        newUser.setEmail(userRegisterRequest.getEmail());
         newUser.setEncryptedPassword(encryptedPassword);
         newUser.setCreatedAt(Instant.now());
 
@@ -79,7 +82,7 @@ public class UserController extends BaseController {
             return new ResponseEntity<>(new ResponseError("新密码和确认密码不一致"), HttpStatus.BAD_REQUEST);
         }
 
-        User user = userRepository.findUserByName(me.getName());
+        User user = userRepository.findByName(me.getName());
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
         if (!bCryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(), user.getEncryptedPassword())) {

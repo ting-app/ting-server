@@ -5,19 +5,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ting.Constant;
 import ting.dto.ResponseError;
-import ting.dto.UserCredential;
 import ting.dto.UserDto;
+import ting.dto.UserLoginRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
-import ting.validation.Login;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @RestController
 public class AuthController extends BaseController {
@@ -28,16 +27,16 @@ public class AuthController extends BaseController {
     private RedisIndexedSessionRepository sessionRepository;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@Validated({Login.class}) @RequestBody UserCredential userCredential, HttpSession session) {
-        User user = userRepository.findUserByName(userCredential.getName());
+    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest userLoginRequest, HttpSession session) {
+        User user = userRepository.findByNameOrEmail(userLoginRequest.getNameOrEmail(), userLoginRequest.getNameOrEmail());
 
         if (user == null) {
-            return new ResponseEntity<>(new ResponseError("用户名不存在"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ResponseError("用户不存在"), HttpStatus.NOT_FOUND);
         }
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-        if (!bCryptPasswordEncoder.matches(userCredential.getPassword(), user.getEncryptedPassword())) {
+        if (!bCryptPasswordEncoder.matches(userLoginRequest.getPassword(), user.getEncryptedPassword())) {
             return new ResponseEntity<>(new ResponseError("用户名或密码不正确"), HttpStatus.BAD_REQUEST);
         }
 
