@@ -42,6 +42,10 @@ public class UserController extends BaseController {
             return new ResponseEntity<>(new ResponseError("两次密码不一致"), HttpStatus.BAD_REQUEST);
         }
 
+        if (!emailPattern.matcher(userRegisterRequest.getEmail()).matches()) {
+            return new ResponseEntity<>(new ResponseError("邮箱地址不合法"), HttpStatus.BAD_REQUEST);
+        }
+
         User userByName = userRepository.findByName(userRegisterRequest.getName());
         User userByEmail = userRepository.findByEmail(userRegisterRequest.getEmail());
 
