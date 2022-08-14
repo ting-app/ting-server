@@ -23,7 +23,7 @@ public class AzureBlobStorageService {
     @Autowired
     private AzureBlobStorageConfig azureBlobStorageConfig;
 
-    public BlobSas generateSas(String permission) {
+    public AzureBlobSas generateSas(String permission) {
         var blobServiceClient = new BlobServiceClientBuilder()
                 .connectionString(azureBlobStorageConfig.getConnectionString())
                 .buildClient();
@@ -46,10 +46,10 @@ public class AzureBlobStorageService {
                 .setProtocol(SasProtocol.HTTPS_HTTP);
         String sas = blobServiceClient.generateAccountSas(accountSasSignatureValues);
 
-        BlobSas blobSas = new BlobSas();
-        blobSas.setContainerUrl(String.format("https://%s.blob.core.windows.net/%s", blobServiceClient.getAccountName(), azureBlobStorageConfig.getContainerName()));
-        blobSas.setSas(sas);
+        AzureBlobSas azureBlobSas = new AzureBlobSas();
+        azureBlobSas.setContainerUrl(String.format("https://%s.blob.core.windows.net/%s", blobServiceClient.getAccountName(), azureBlobStorageConfig.getContainerName()));
+        azureBlobSas.setSas(sas);
 
-        return blobSas;
+        return azureBlobSas;
     }
 }

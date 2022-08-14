@@ -1,6 +1,6 @@
 package ting.service;
 
-public class BlobSas {
+public class AzureBlobSas {
     private String containerUrl;
 
     private String sas;
