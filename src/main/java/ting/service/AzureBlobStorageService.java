@@ -14,6 +14,9 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
+/**
+ * The service that manages the access token of azure blobs.
+ */
 @Service
 public class AzureBlobStorageService {
     public static final String READ_PERMISSION = "r";
@@ -23,6 +26,13 @@ public class AzureBlobStorageService {
     @Autowired
     private AzureBlobStorageConfig azureBlobStorageConfig;
 
+    /**
+     * Generates access token with given permission.
+     *
+     * @param permission The permission needed to generate the access token,
+     *                   currently only r (read) and c (create) are supported.
+     * @return An object that contains the url of blob container and its access token.
+     */
     public AzureBlobSas generateSas(String permission) {
         var blobServiceClient = new BlobServiceClientBuilder()
                 .connectionString(azureBlobStorageConfig.getConnectionString())
@@ -48,7 +58,8 @@ public class AzureBlobStorageService {
                 .setObject(true);
         AccountSasService accountSasService = new AccountSasService()
                 .setBlobAccess(true);
-        AccountSasSignatureValues accountSasSignatureValues = new AccountSasSignatureValues(expiryTime, accountSasPermission, accountSasService, accountSasResourceType)
+        AccountSasSignatureValues accountSasSignatureValues = new AccountSasSignatureValues(
+                expiryTime, accountSasPermission, accountSasService, accountSasResourceType)
                 .setProtocol(SasProtocol.HTTPS_HTTP);
         String sas = blobServiceClient.generateAccountSas(accountSasSignatureValues);
 

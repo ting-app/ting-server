@@ -13,11 +13,17 @@ import ting.dto.UserDto;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+/**
+ * If an argument of a route is annotated by {@link ting.annotation.Me}
+ * and its type is {@link ting.dto.UserDto},
+ * then the value of this argument is resolved to current login user in this session.
+ */
 @Component
 public class CurrentUserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterAnnotation(Me.class) != null;
+        return parameter.getParameterAnnotation(Me.class) != null
+                && UserDto.class.equals(parameter.getParameterType());
     }
 
     @Override

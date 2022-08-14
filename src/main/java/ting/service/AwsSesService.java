@@ -12,11 +12,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ting.config.AwsSesConfig;
 
+/**
+ * The service that sends mails by Amazon Simple Email Service.
+ */
 @Service
 public class AwsSesService {
     @Autowired
     private AwsSesConfig awsSesConfig;
 
+    /**
+     * Send a mail to the specified address.
+     *
+     * @param to      Recipient's mail address
+     * @param title   Title of the mail
+     * @param content Content of the mail
+     */
     public void send(String to, String title, String content) {
         if (StringUtils.isBlank(to) || StringUtils.isBlank(title) || StringUtils.isBlank(content)) {
             throw new IllegalArgumentException("to/title/content 都不能为空");

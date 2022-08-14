@@ -17,6 +17,9 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The service that manipulates program entities.
+ */
 @Service
 public class ProgramService {
     @PersistenceContext
@@ -28,6 +31,13 @@ public class ProgramService {
     @Autowired
     private TingRepository tingRepository;
 
+    /**
+     * Find programs by language/createdBy.
+     *
+     * @param language  Language of the Program
+     * @param createdBy Who creates the program
+     * @return List of {@link ting.entity.Program}
+     */
     public List<Program> findAll(Integer language, Integer createdBy) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Program> criteriaQuery = criteriaBuilder.createQuery(Program.class);

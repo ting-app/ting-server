@@ -59,7 +59,8 @@ public class UserController extends BaseController {
             return new ResponseEntity<>(new ResponseError("用户名或邮箱地址已存在"), HttpStatus.BAD_REQUEST);
         }
 
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(tingConfig.getPasswordStrength(), new SecureRandom());
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(
+                tingConfig.getPasswordStrength(), new SecureRandom());
         String encryptedPassword = bCryptPasswordEncoder.encode(userRegisterRequest.getPassword());
 
         User newUser = new User();
@@ -89,18 +90,21 @@ public class UserController extends BaseController {
     @LoginRequired
     public ResponseEntity<?> changePassword(
             @Valid ChangePasswordRequest changePasswordRequest, @Me UserDto me) {
-        if (!Objects.equals(changePasswordRequest.getNewPassword(), changePasswordRequest.getConfirmNewPassword())) {
+        if (!Objects.equals(changePasswordRequest.getNewPassword(),
+                changePasswordRequest.getConfirmNewPassword())) {
             return new ResponseEntity<>(new ResponseError("新密码和确认密码不一致"), HttpStatus.BAD_REQUEST);
         }
 
         User user = userRepository.findByName(me.getName());
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-        if (!bCryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(), user.getEncryptedPassword())) {
+        if (!bCryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(),
+                user.getEncryptedPassword())) {
             return new ResponseEntity<>(new ResponseError("旧密码不正确"), HttpStatus.BAD_REQUEST);
         }
 
-        String newEncryptedPassword = new BCryptPasswordEncoder(tingConfig.getPasswordStrength(), new SecureRandom())
+        String newEncryptedPassword = new BCryptPasswordEncoder(
+                tingConfig.getPasswordStrength(), new SecureRandom())
                 .encode(changePasswordRequest.getNewPassword());
         user.setEncryptedPassword(newEncryptedPassword);
 

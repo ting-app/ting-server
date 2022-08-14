@@ -1,5 +1,8 @@
 package ting.service;
 
+/**
+ * The access token that is needed to access azure blobs.
+ */
 public class AzureBlobSas {
     private String containerUrl;
 

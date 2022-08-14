@@ -14,6 +14,11 @@ import ting.dto.UserDto;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Intercepts the requests that are annotated by {@link ting.annotation.LoginRequired}.
+ * If a route is annotated by {@link ting.annotation.LoginRequired} and current user is anonymous,
+ * it will send a 401 http status code to client.
+ */
 @Component
 public class AuthenticationInterceptor implements HandlerInterceptor {
     private final ObjectMapper objectMapper = new ObjectMapper();
