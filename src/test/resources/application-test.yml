@@ -7,31 +7,3 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-  session:
-    store-type: redis
-    redis:
-      save-mode: on_set_attribute
-      flush-mode: on_save
-      namespace: ting:session
-  data:
-    redis:
-      repositories:
-        enabled: false
-  redis:
-    host: localhost
-    port: 6379
-server:
-  servlet:
-    session:
-      timeout: 24h
-ting:
-  passwordStrength: ${TING_PASSWORD_STRENGTH:10}
-  azure:
-    storage:
-      connectionString: ${AZURE_STORAGE_CONNECTION_STRING}
-      containerName: ${AZURE_STORAGE_CONTAINER_NAME:ting}
-      readExpiryTimeInMinutes: ${AZURE_STORAGE_READ_EXPIRY_TIME_IN_MINUTES:30}
-      writeExpiryTimeInMinutes: ${AZURE_STORAGE_WRITE_EXPIRY_TIME_IN_MINUTES:5}

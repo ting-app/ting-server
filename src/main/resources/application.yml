@@ -35,3 +35,7 @@ ting:
       containerName: ${AZURE_STORAGE_CONTAINER_NAME:ting}
       readExpiryTimeInMinutes: ${AZURE_STORAGE_READ_EXPIRY_TIME_IN_MINUTES:30}
       writeExpiryTimeInMinutes: ${AZURE_STORAGE_WRITE_EXPIRY_TIME_IN_MINUTES:5}
+  aws:
+    ses:
+      region: ${AWS_SES_REGION:us-west-2}
+      fromAddress: ${AWS_SES_FROM_ADDRESS:ting@ting-noreply.dekiru.app}
