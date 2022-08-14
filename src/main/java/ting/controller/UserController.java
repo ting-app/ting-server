@@ -18,6 +18,7 @@ import ting.dto.UserDto;
 import ting.dto.UserRegisterRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
+import ting.service.AwsSesService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -28,17 +29,22 @@ import java.util.regex.Pattern;
 
 @RestController
 public class UserController extends BaseController {
+    private final Pattern emailPattern = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private TingConfig tingConfig;
 
-    private final Pattern emailPattern = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+    @Autowired
+    private AwsSesService awsSesService;
 
     @PostMapping("/users")
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest, HttpSession session) {
-        if (!Objects.equals(userRegisterRequest.getPassword(), userRegisterRequest.getConfirmPassword())) {
+    public ResponseEntity<?> createUser(
+            @Valid @RequestBody UserRegisterRequest userRegisterRequest, HttpSession session) {
+        if (!Objects.equals(userRegisterRequest.getPassword(),
+                userRegisterRequest.getConfirmPassword())) {
             return new ResponseEntity<>(new ResponseError("两次密码不一致"), HttpStatus.BAD_REQUEST);
         }
 
@@ -81,7 +87,8 @@ public class UserController extends BaseController {
 
     @PostMapping("/users/me/changePassword")
     @LoginRequired
-    public ResponseEntity<?> changePassword(@Valid ChangePasswordRequest changePasswordRequest, @Me UserDto me) {
+    public ResponseEntity<?> changePassword(
+            @Valid ChangePasswordRequest changePasswordRequest, @Me UserDto me) {
         if (!Objects.equals(changePasswordRequest.getNewPassword(), changePasswordRequest.getConfirmNewPassword())) {
             return new ResponseEntity<>(new ResponseError("新密码和确认密码不一致"), HttpStatus.BAD_REQUEST);
         }

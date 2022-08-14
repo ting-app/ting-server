@@ -19,7 +19,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(
+            HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
@@ -34,7 +36,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().write(this.objectMapper.writeValueAsBytes(new ResponseError("请先登陆")));
+            response.getOutputStream()
+                    .write(this.objectMapper.writeValueAsBytes(new ResponseError("请先登陆")));
 
             return false;
         } else {

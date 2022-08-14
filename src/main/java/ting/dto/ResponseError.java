@@ -1,5 +1,8 @@
 package ting.dto;
 
+/**
+ * The error entity returned to client.
+ */
 public class ResponseError {
     private Error error;
 
@@ -15,6 +18,9 @@ public class ResponseError {
         this.error = error;
     }
 
+    /**
+     * The detailed error message.
+     */
     public static class Error {
         private String message;
 

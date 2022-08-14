@@ -29,7 +29,8 @@ public class TingPracticeController extends BaseController {
 
     @PostMapping("/tingPractices")
     @LoginRequired
-    public ResponseEntity<?> createTingPractice(@Valid @RequestBody TingPracticeDto tingPracticeDto, @Me UserDto me) {
+    public ResponseEntity<?> createTingPractice(
+            @Valid @RequestBody TingPracticeDto tingPracticeDto, @Me UserDto me) {
         Ting ting = tingRepository.findById(tingPracticeDto.getTingId()).orElse(null);
 
         if (ting == null) {

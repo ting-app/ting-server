@@ -6,6 +6,9 @@ import ting.entity.Ting;
 
 import java.util.List;
 
+/**
+ * The repository to manipulate the ting entity.
+ */
 @Repository
 public interface TingRepository extends JpaRepository<Ting, Long> {
     List<Ting> findByProgramId(long programId);

@@ -2,6 +2,9 @@ package ting.dto;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * The request entity to login.
+ */
 public class UserLoginRequest {
     @NotBlank(message = "姓名或邮箱地址不能为空")
     private String nameOrEmail;

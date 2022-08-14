@@ -34,7 +34,9 @@ public class ProgramController extends BaseController {
     private ProgramService programService;
 
     @GetMapping("/programs")
-    public List<ProgramDto> getPrograms(@RequestParam(required = false) Integer language, @RequestParam(required = false) Integer createdBy) {
+    public List<ProgramDto> getPrograms(
+            @RequestParam(required = false) Integer language,
+            @RequestParam(required = false) Integer createdBy) {
         List<Program> programs = programService.findAll(language, createdBy);
         List<ProgramDto> programDtos = programs.stream()
                 .map(program -> {
@@ -55,7 +57,8 @@ public class ProgramController extends BaseController {
 
     @PostMapping("/programs")
     @LoginRequired
-    public ResponseEntity<ProgramDto> createProgram(@Valid @RequestBody ProgramDto programDto, @Me UserDto me) {
+    public ResponseEntity<ProgramDto> createProgram(
+            @Valid @RequestBody ProgramDto programDto, @Me UserDto me) {
         Instant now = Instant.now();
         Program program = new Program();
         program.setTitle(programDto.getTitle());
@@ -114,7 +117,8 @@ public class ProgramController extends BaseController {
 
     @PutMapping("/programs/{id}")
     @LoginRequired
-    public ResponseEntity<?> updateProgram(@PathVariable long id, @Valid @RequestBody ProgramDto programDto, @Me UserDto me) {
+    public ResponseEntity<?> updateProgram(
+            @PathVariable long id, @Valid @RequestBody ProgramDto programDto, @Me UserDto me) {
         Program program = programRepository.findById(id).orElse(null);
 
         if (program == null) {

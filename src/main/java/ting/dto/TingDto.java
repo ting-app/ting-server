@@ -4,6 +4,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.Instant;
 
+/**
+ * The data transfer object that represents a ting.
+ */
 public class TingDto {
     private long id;
 

@@ -16,9 +16,9 @@ import java.util.Objects;
 
 @Service
 public class AzureBlobStorageService {
-    public final static String READ_PERMISSION = "r";
+    public static final String READ_PERMISSION = "r";
 
-    public final static String CREATE_PERMISSION = "c";
+    public static final String CREATE_PERMISSION = "c";
 
     @Autowired
     private AzureBlobStorageConfig azureBlobStorageConfig;
@@ -32,10 +32,16 @@ public class AzureBlobStorageService {
 
         if (Objects.equals(READ_PERMISSION, permission)) {
             accountSasPermission.setReadPermission(true);
-            expiryTime = expiryTime.plus(Duration.ofMinutes(azureBlobStorageConfig.getReadExpiryTimeInMinutes()));
+
+            Duration duration = Duration.ofMinutes(
+                    azureBlobStorageConfig.getReadExpiryTimeInMinutes());
+            expiryTime = expiryTime.plus(duration);
         } else if (Objects.equals(CREATE_PERMISSION, permission)) {
             accountSasPermission.setCreatePermission(true);
-            expiryTime = expiryTime.plus(Duration.ofMinutes(azureBlobStorageConfig.getWriteExpiryTimeInMinutes()));
+
+            Duration duration = Duration.ofMinutes(
+                    azureBlobStorageConfig.getWriteExpiryTimeInMinutes());
+            expiryTime = expiryTime.plus(duration);
         }
 
         AccountSasResourceType accountSasResourceType = new AccountSasResourceType()

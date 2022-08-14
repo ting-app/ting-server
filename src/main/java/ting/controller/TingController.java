@@ -93,7 +93,8 @@ public class TingController extends BaseController {
 
     @PutMapping("/tings/{id}")
     @LoginRequired
-    public ResponseEntity<?> updateTing(@PathVariable long id, @Valid @RequestBody TingDto tingDto, @Me UserDto me) {
+    public ResponseEntity<?> updateTing(
+            @PathVariable long id, @Valid @RequestBody TingDto tingDto, @Me UserDto me) {
         Ting ting = tingRepository.findById(id).orElse(null);
 
         if (ting == null) {
@@ -133,7 +134,8 @@ public class TingController extends BaseController {
             return new ResponseEntity<>(new ResponseError("听力不存在"), HttpStatus.NOT_FOUND);
         }
 
-        AzureBlobSas azureBlobSas = azureBlobStorageService.generateSas(AzureBlobStorageService.READ_PERMISSION);
+        AzureBlobSas azureBlobSas = azureBlobStorageService.generateSas(
+                AzureBlobStorageService.READ_PERMISSION);
         String audioUrl = ting.getAudioUrl() + "?" + azureBlobSas.getSas();
 
         TingDto tingDto = new TingDto();

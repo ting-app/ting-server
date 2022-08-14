@@ -3,6 +3,9 @@ package ting.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+/**
+ * The request entity to change user's password.
+ */
 public class ChangePasswordRequest {
     @NotBlank(message = "旧密码不能为空")
     private String oldPassword;

@@ -2,6 +2,9 @@ package ting.dto;
 
 import java.io.Serializable;
 
+/**
+ * The data transfer object that represents a user.
+ */
 public class UserDto implements Serializable {
     private long id;
 

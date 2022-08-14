@@ -21,7 +21,9 @@ public class CurrentUserHandlerMethodArgumentResolver implements HandlerMethodAr
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(
+            MethodParameter parameter, ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpSession session = ((HttpServletRequest) webRequest.getNativeRequest()).getSession();
         UserDto user = (UserDto) session.getAttribute(Constant.ME);
 

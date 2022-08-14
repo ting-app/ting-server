@@ -27,8 +27,10 @@ public class AuthController extends BaseController {
     private RedisIndexedSessionRepository sessionRepository;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest userLoginRequest, HttpSession session) {
-        User user = userRepository.findByNameOrEmail(userLoginRequest.getNameOrEmail(), userLoginRequest.getNameOrEmail());
+    public ResponseEntity<?> login(
+            @Valid @RequestBody UserLoginRequest userLoginRequest, HttpSession session) {
+        User user = userRepository.findByNameOrEmail(
+                userLoginRequest.getNameOrEmail(), userLoginRequest.getNameOrEmail());
 
         if (user == null) {
             return new ResponseEntity<>(new ResponseError("用户不存在"), HttpStatus.NOT_FOUND);
@@ -36,7 +38,8 @@ public class AuthController extends BaseController {
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-        if (!bCryptPasswordEncoder.matches(userLoginRequest.getPassword(), user.getEncryptedPassword())) {
+        if (!bCryptPasswordEncoder.matches(
+                userLoginRequest.getPassword(), user.getEncryptedPassword())) {
             return new ResponseEntity<>(new ResponseError("用户名或密码不正确"), HttpStatus.BAD_REQUEST);
         }
 

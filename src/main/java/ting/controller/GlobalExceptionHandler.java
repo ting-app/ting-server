@@ -20,7 +20,8 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseError> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ResponseError> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         String message = fieldErrors.stream()
@@ -33,7 +34,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ResponseError> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity<ResponseError> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException e) {
         return new ResponseEntity<>(new ResponseError("HTTP 消息转换异常"), HttpStatus.BAD_REQUEST);
     }
 

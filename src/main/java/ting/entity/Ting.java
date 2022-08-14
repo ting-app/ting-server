@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import java.time.Instant;
 
+/**
+ * The ting entity.
+ */
 @Entity
 public class Ting extends BaseEntity {
     @Column

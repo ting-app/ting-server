@@ -3,6 +3,9 @@ package ting.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+/**
+ * The request entity to register a new user.
+ */
 public class UserRegisterRequest {
     @NotBlank(message = "姓名不能为空")
     @Size(max = 20, message = "姓名不能超过20个字符")

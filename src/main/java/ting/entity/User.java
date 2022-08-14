@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import java.time.Instant;
 
+/**
+ * The user entity.
+ */
 @Entity
 public class User extends BaseEntity {
     @Column

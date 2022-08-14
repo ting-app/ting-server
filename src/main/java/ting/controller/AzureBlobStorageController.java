@@ -23,7 +23,8 @@ public class AzureBlobStorageController extends BaseController {
     @GetMapping("/azureBlobs/sas")
     public ResponseEntity<?> sas(@RequestParam String permission) {
         // Currently only supports read/write permission
-        if (!Objects.equals(READ_PERMISSION, permission) && !Objects.equals(CREATE_PERMISSION, permission)) {
+        if (!Objects.equals(READ_PERMISSION, permission)
+                && !Objects.equals(CREATE_PERMISSION, permission)) {
             return new ResponseEntity<>(new ResponseError("不支持的权限类型"), HttpStatus.BAD_REQUEST);
         }
 

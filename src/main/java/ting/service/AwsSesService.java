@@ -22,9 +22,10 @@ public class AwsSesService {
             throw new IllegalArgumentException("to/title/content 都不能为空");
         }
 
-        AmazonSimpleEmailService amazonSimpleEmailService = AmazonSimpleEmailServiceClientBuilder.standard()
-                .withRegion(awsSesConfig.getRegion())
-                .build();
+        AmazonSimpleEmailService amazonSimpleEmailService =
+                AmazonSimpleEmailServiceClientBuilder.standard()
+                        .withRegion(awsSesConfig.getRegion())
+                        .build();
         Destination destination = new Destination().withToAddresses(to);
         Body body = new Body().withHtml(
                 new Content().withCharset("UTF-8").withData(content));

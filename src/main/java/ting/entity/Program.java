@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import java.time.Instant;
 
+/**
+ * The program entity.
+ */
 @Entity
 public class Program extends BaseEntity {
     @Column

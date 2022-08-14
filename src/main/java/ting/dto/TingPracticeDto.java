@@ -4,6 +4,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 
+/**
+ * The data transfer object that represents a practice record of a ting.
+ */
 public class TingPracticeDto {
     private long id;
 
