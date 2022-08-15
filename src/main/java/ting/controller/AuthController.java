@@ -18,6 +18,9 @@ import ting.repository.UserRepository;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+/**
+ * The api routes for auth.
+ */
 @RestController
 public class AuthController extends BaseController {
     @Autowired
@@ -26,6 +29,13 @@ public class AuthController extends BaseController {
     @Autowired
     private RedisIndexedSessionRepository sessionRepository;
 
+    /**
+     * Login.
+     *
+     * @param userLoginRequest The request entity to login
+     * @param session          Current http session
+     * @return Current user
+     */
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(
             @Valid @RequestBody UserLoginRequest userLoginRequest, HttpSession session) {
@@ -36,9 +46,9 @@ public class AuthController extends BaseController {
             return new ResponseEntity<>(new ResponseError("用户不存在"), HttpStatus.NOT_FOUND);
         }
 
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        BCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder();
 
-        if (!bCryptPasswordEncoder.matches(
+        if (!cryptPasswordEncoder.matches(
                 userLoginRequest.getPassword(), user.getEncryptedPassword())) {
             return new ResponseEntity<>(new ResponseError("用户名或密码不正确"), HttpStatus.BAD_REQUEST);
         }
@@ -52,6 +62,12 @@ public class AuthController extends BaseController {
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
+    /**
+     * Sign out.
+     *
+     * @param session Current http session
+     * @return {@link java.lang.Void}
+     */
     @PostMapping("/auth/signOut")
     public ResponseEntity<Void> signOut(HttpSession session) {
         UserDto user = (UserDto) session.getAttribute(Constant.ME);

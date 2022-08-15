@@ -19,6 +19,9 @@ import ting.repository.TingRepository;
 import javax.validation.Valid;
 import java.time.Instant;
 
+/**
+ * The api routes for ting practices.
+ */
 @RestController
 public class TingPracticeController extends BaseController {
     @Autowired
@@ -27,6 +30,13 @@ public class TingPracticeController extends BaseController {
     @Autowired
     private TingPracticeRepository tingPracticeRepository;
 
+    /**
+     * Create a ting practice.
+     *
+     * @param tingPracticeDto The request entity to create a ting practice
+     * @param me              Current user
+     * @return Created new ting practice
+     */
     @PostMapping("/tingPractices")
     @LoginRequired
     public ResponseEntity<?> createTingPractice(

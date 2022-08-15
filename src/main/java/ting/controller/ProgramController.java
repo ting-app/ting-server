@@ -25,6 +25,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The api routes for programs.
+ */
 @RestController
 public class ProgramController extends BaseController {
     @Autowired
@@ -33,6 +36,13 @@ public class ProgramController extends BaseController {
     @Autowired
     private ProgramService programService;
 
+    /**
+     * Get programs.
+     *
+     * @param language  The language of the program
+     * @param createdBy Who creates the program
+     * @return List of {@link ting.dto.ProgramDto}
+     */
     @GetMapping("/programs")
     public List<ProgramDto> getPrograms(
             @RequestParam(required = false) Integer language,
@@ -55,6 +65,13 @@ public class ProgramController extends BaseController {
         return programDtos;
     }
 
+    /**
+     * Create a new program.
+     *
+     * @param programDto The request entity to create a new program
+     * @param me         Current user
+     * @return Created new program
+     */
     @PostMapping("/programs")
     @LoginRequired
     public ResponseEntity<ProgramDto> createProgram(
@@ -78,6 +95,12 @@ public class ProgramController extends BaseController {
         return new ResponseEntity<>(programDto, HttpStatus.CREATED);
     }
 
+    /**
+     * Get program id.
+     *
+     * @param id The id of program
+     * @return {@link ting.dto.ProgramDto}
+     */
     @GetMapping("/programs/{id}")
     public ResponseEntity<?> getProgram(@PathVariable long id) {
         Program program = programRepository.findById(id).orElse(null);
@@ -97,6 +120,13 @@ public class ProgramController extends BaseController {
         return new ResponseEntity<>(programDto, HttpStatus.OK);
     }
 
+    /**
+     * Delete program by id.
+     *
+     * @param id The id of program
+     * @param me Current user
+     * @return {@link java.lang.Void}
+     */
     @DeleteMapping("/programs/{id}")
     @LoginRequired
     public ResponseEntity<?> deleteProgram(@PathVariable long id, @Me UserDto me) {
@@ -115,6 +145,14 @@ public class ProgramController extends BaseController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Update program by id.
+     *
+     * @param id         The id of program
+     * @param programDto The request entity to update the program
+     * @param me         Current user
+     * @return The updated program
+     */
     @PutMapping("/programs/{id}")
     @LoginRequired
     public ResponseEntity<?> updateProgram(
