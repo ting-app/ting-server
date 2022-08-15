@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "aws.ses")
+@ConfigurationProperties(prefix = "ting.aws.ses")
 public class AwsSesConfig {
     private String region;
 

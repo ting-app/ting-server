@@ -29,6 +29,8 @@ server:
       timeout: 24h
 ting:
   passwordStrength: ${TING_PASSWORD_STRENGTH:10}
+  registerConfirmExpiryDuration: ${TING_REGISTER_CONFIRM_EXPIRY_DURATION:24h}
+  registerConfirmReturnUrl: ${TING_REGISTER_CONFIRM_RETURN_URL:http://localhost:5000/#/registerConfirm}
   azure:
     storage:
       connectionString: ${AZURE_STORAGE_CONNECTION_STRING}

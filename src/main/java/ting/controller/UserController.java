@@ -1,6 +1,7 @@
 package ting.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,11 +21,13 @@ import ting.entity.User;
 import ting.repository.UserRepository;
 import ting.service.AwsSesService;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -43,6 +46,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private AwsSesService awsSesService;
+
+    @Resource
+    private RedisTemplate<String, Long> redisTemplate;
 
     /**
      * Create a new user.
@@ -78,18 +84,19 @@ public class UserController extends BaseController {
         newUser.setName(userRegisterRequest.getName());
         newUser.setEmail(userRegisterRequest.getEmail());
         newUser.setEncryptedPassword(encryptedPassword);
+        newUser.setVerified(false);
         newUser.setCreatedAt(Instant.now());
 
         // TODO: in the rare case, two users may register with the same name at the same time
         userRepository.save(newUser);
 
-        UserDto userDto = new UserDto();
-        userDto.setId(newUser.getId());
-        userDto.setName(newUser.getName());
+        String uuid = UUID.randomUUID().toString();
+        String key = String.format("ting:register:%s", uuid);
+        redisTemplate.opsForValue()
+                .set(key, newUser.getId(), tingConfig.getRegisterConfirmExpiryDuration());
+        awsSesService.send(userRegisterRequest.getEmail(), "Ting 注册确认", buildRegisterConfirmEmailContent(uuid));
 
-        session.setAttribute(Constant.ME, userDto);
-
-        return new ResponseEntity<>(userDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/users/me")
@@ -129,5 +136,15 @@ public class UserController extends BaseController {
         userRepository.save(user);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private String buildRegisterConfirmEmailContent(String uuid) {
+        String url = tingConfig.getRegisterConfirmReturnUrl() + "?key=" + uuid;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<p>欢迎注册 Ting，请点击下方链接完成注册：</p>");
+        stringBuilder.append(String.format("<p><a href=\"%s\">%s</a></p>", url, url));
+        stringBuilder.append("<p>本邮件由系统自动生成，请勿直接回复。</p>");
+
+        return stringBuilder.toString();
     }
 }
