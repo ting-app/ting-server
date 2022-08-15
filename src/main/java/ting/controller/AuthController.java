@@ -54,7 +54,9 @@ public class AuthController extends BaseController {
         }
 
         if (!user.isVerified()) {
-            return new ResponseEntity<>(new ResponseError("USER_IS_NOT_VERIFIED", "用户邮箱未验证"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(
+                    new ResponseError("USER_IS_NOT_VERIFIED", "用户邮箱未验证"),
+                    HttpStatus.BAD_REQUEST);
         }
 
         UserDto userDto = new UserDto();

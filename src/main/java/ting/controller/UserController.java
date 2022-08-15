@@ -141,22 +141,33 @@ public class UserController extends BaseController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Confirm registration.
+     *
+     * @param key The registration key
+     * @return {@link java.lang.Void}
+     */
     @PostMapping("/users/registerConfirm")
     public ResponseEntity<?> registerConfirm(@RequestParam String key) {
         Long userId = redisTemplate.opsForValue().get(String.format("ting:register:%s", key));
 
         if (userId == null) {
-            return new ResponseEntity<>(new ResponseError("REGISTER_CONFIRM_LINK_EXPIRED", "注册确认链接已过期"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(
+                    new ResponseError("REGISTER_CONFIRM_LINK_EXPIRED", "注册确认链接已过期"),
+                    HttpStatus.BAD_REQUEST);
         }
 
         User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
-            return new ResponseEntity<>(new ResponseError("USER_DOES_NOT_EXIST", "用户不存在"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(
+                    new ResponseError("USER_DOES_NOT_EXIST", "用户不存在"), HttpStatus.NOT_FOUND);
         }
 
         if (user.isVerified()) {
-            return new ResponseEntity<>(new ResponseError("USER_IS_ALREADY_VERIFIED", "注册已确认"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(
+                    new ResponseError("USER_IS_ALREADY_VERIFIED", "注册已确认"),
+                    HttpStatus.BAD_REQUEST);
         }
 
         user.setVerified(true);
