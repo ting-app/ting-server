@@ -94,7 +94,8 @@ public class UserController extends BaseController {
         String key = String.format("ting:register:%s", uuid);
         redisTemplate.opsForValue()
                 .set(key, newUser.getId(), tingConfig.getRegisterConfirmExpiryDuration());
-        awsSesService.send(userRegisterRequest.getEmail(), "Ting 注册确认", buildRegisterConfirmEmailContent(uuid));
+        awsSesService.send(userRegisterRequest.getEmail(),
+                "Ting 注册确认", buildRegisterConfirmEmailContent(uuid));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
