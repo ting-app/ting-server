@@ -141,7 +141,8 @@ public class UserController extends BaseController {
      */
     @PostMapping("/users/registerConfirm")
     public ResponseEntity<?> registerConfirm(@RequestParam String key) {
-        Long userId = redisTemplate.opsForValue().get(String.format("ting:register:%s", key));
+        String registerKey = String.format("ting:register:%s", key);
+        Long userId = redisTemplate.opsForValue().get(registerKey);
 
         if (userId == null) {
             return new ResponseEntity<>(
@@ -165,6 +166,7 @@ public class UserController extends BaseController {
         user.setVerified(true);
 
         userRepository.save(user);
+        redisTemplate.delete(registerKey);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
