@@ -27,8 +27,12 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+/**
+ * The api routes for users.
+ */
 @RestController
 public class UserController extends BaseController {
+    @SuppressWarnings("checkstyle:LineLength")
     private final Pattern emailPattern = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 
     @Autowired
@@ -40,6 +44,13 @@ public class UserController extends BaseController {
     @Autowired
     private AwsSesService awsSesService;
 
+    /**
+     * Create a new user.
+     *
+     * @param userRegisterRequest The request entity to create a new user
+     * @param session             {@link javax.servlet.http.HttpSession}
+     * @return Created new user {@link ting.dto.UserDto}
+     */
     @PostMapping("/users")
     public ResponseEntity<?> createUser(
             @Valid @RequestBody UserRegisterRequest userRegisterRequest, HttpSession session) {
@@ -59,9 +70,9 @@ public class UserController extends BaseController {
             return new ResponseEntity<>(new ResponseError("用户名或邮箱地址已存在"), HttpStatus.BAD_REQUEST);
         }
 
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(
+        BCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder(
                 tingConfig.getPasswordStrength(), new SecureRandom());
-        String encryptedPassword = bCryptPasswordEncoder.encode(userRegisterRequest.getPassword());
+        String encryptedPassword = cryptPasswordEncoder.encode(userRegisterRequest.getPassword());
 
         User newUser = new User();
         newUser.setName(userRegisterRequest.getName());
@@ -86,6 +97,13 @@ public class UserController extends BaseController {
         return (UserDto) session.getAttribute(Constant.ME);
     }
 
+    /**
+     * Change user's password.
+     *
+     * @param changePasswordRequest The request entity to change user's password
+     * @param me                    Current user
+     * @return {@link java.lang.Void}
+     */
     @PostMapping("/users/me/changePassword")
     @LoginRequired
     public ResponseEntity<?> changePassword(
@@ -96,9 +114,9 @@ public class UserController extends BaseController {
         }
 
         User user = userRepository.findByName(me.getName());
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        BCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder();
 
-        if (!bCryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(),
+        if (!cryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(),
                 user.getEncryptedPassword())) {
             return new ResponseEntity<>(new ResponseError("旧密码不正确"), HttpStatus.BAD_REQUEST);
         }

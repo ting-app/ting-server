@@ -20,14 +20,17 @@ import ting.entity.Program;
 import ting.entity.Ting;
 import ting.repository.ProgramRepository;
 import ting.repository.TingRepository;
-import ting.service.AzureBlobStorageService;
 import ting.service.AzureBlobSas;
+import ting.service.AzureBlobStorageService;
 
 import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The api routes for tings.
+ */
 @RestController
 public class TingController extends BaseController {
     @Autowired
@@ -39,6 +42,13 @@ public class TingController extends BaseController {
     @Autowired
     private AzureBlobStorageService azureBlobStorageService;
 
+    /**
+     * Create a new ting.
+     *
+     * @param tingDto The request entity to create a new ting
+     * @param me      Current user
+     * @return Created new ting {@link ting.dto.TingDto}
+     */
     @PostMapping("/tings")
     @LoginRequired
     public ResponseEntity<?> createTing(@Valid @RequestBody TingDto tingDto, @Me UserDto me) {
@@ -71,6 +81,13 @@ public class TingController extends BaseController {
         return new ResponseEntity<>(tingDto, HttpStatus.CREATED);
     }
 
+    /**
+     * Delete ting by id.
+     *
+     * @param id The id of ting
+     * @param me Current user
+     * @return {@link java.lang.Void}
+     */
     @DeleteMapping("/tings/{id}")
     @LoginRequired
     public ResponseEntity<?> deleteTing(@PathVariable long id, @Me UserDto me) {
@@ -91,6 +108,14 @@ public class TingController extends BaseController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Update ting by id.
+     *
+     * @param id      The id of ting
+     * @param tingDto The request entity to update a ting
+     * @param me      Current user
+     * @return Updated ting {@link ting.dto.TingDto}
+     */
     @PutMapping("/tings/{id}")
     @LoginRequired
     public ResponseEntity<?> updateTing(
@@ -126,6 +151,12 @@ public class TingController extends BaseController {
         return new ResponseEntity<>(tingDto, HttpStatus.OK);
     }
 
+    /**
+     * Get ting by id.
+     *
+     * @param id The id of ting
+     * @return {@link ting.dto.TingDto}
+     */
     @GetMapping("/tings/{id}")
     public ResponseEntity<?> getTing(@PathVariable long id) {
         Ting ting = tingRepository.findById(id).orElse(null);
@@ -151,6 +182,12 @@ public class TingController extends BaseController {
         return new ResponseEntity<>(tingDto, HttpStatus.OK);
     }
 
+    /**
+     * Get tings by program id.
+     *
+     * @param programId The id of a program
+     * @return List of {@link ting.dto.TingDto}
+     */
     @GetMapping("/tings")
     public ResponseEntity<?> getTings(@RequestParam long programId) {
         Program program = programRepository.findById(programId).orElse(null);
