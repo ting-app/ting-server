@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ting.Constant;
 import ting.annotation.LoginRequired;
@@ -92,6 +93,7 @@ public class UserController extends BaseController {
 
         String uuid = UUID.randomUUID().toString();
         String key = String.format("ting:register:%s", uuid);
+
         redisTemplate.opsForValue()
                 .set(key, newUser.getId(), tingConfig.getRegisterConfirmExpiryDuration());
         awsSesService.send(userRegisterRequest.getEmail(),
@@ -133,6 +135,31 @@ public class UserController extends BaseController {
                 tingConfig.getPasswordStrength(), new SecureRandom())
                 .encode(changePasswordRequest.getNewPassword());
         user.setEncryptedPassword(newEncryptedPassword);
+
+        userRepository.save(user);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/users/registerConfirm")
+    public ResponseEntity<?> registerConfirm(@RequestParam String key) {
+        Long userId = redisTemplate.opsForValue().get(String.format("ting:register:%s", key));
+
+        if (userId == null) {
+            return new ResponseEntity<>(new ResponseError("REGISTER_CONFIRM_LINK_EXPIRED", "注册确认链接已过期"), HttpStatus.BAD_REQUEST);
+        }
+
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null) {
+            return new ResponseEntity<>(new ResponseError("USER_DOES_NOT_EXIST", "用户不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        if (user.isVerified()) {
+            return new ResponseEntity<>(new ResponseError("USER_IS_ALREADY_VERIFIED", "注册已确认"), HttpStatus.BAD_REQUEST);
+        }
+
+        user.setVerified(true);
 
         userRepository.save(user);
 

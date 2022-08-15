@@ -10,6 +10,10 @@ public class ResponseError {
         this.error = new Error(message);
     }
 
+    public ResponseError(String key, String message) {
+        this.error = new Error(key, message);
+    }
+
     public Error getError() {
         return error;
     }
@@ -22,10 +26,25 @@ public class ResponseError {
      * The detailed error message.
      */
     public static class Error {
+        private String key;
+
         private String message;
 
         public Error(String message) {
             this.message = message;
+        }
+
+        public Error(String key, String message) {
+            this.key = key;
+            this.message = message;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
         }
 
         public String getMessage() {
