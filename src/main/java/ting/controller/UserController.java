@@ -20,7 +20,7 @@ import ting.dto.UserDto;
 import ting.dto.UserRegisterRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
-import ting.service.AwsSesService;
+import ting.service.RegisterService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -28,7 +28,6 @@ import javax.validation.Valid;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -46,7 +45,7 @@ public class UserController extends BaseController {
     private TingConfig tingConfig;
 
     @Autowired
-    private AwsSesService awsSesService;
+    private RegisterService registerService;
 
     @Resource
     private RedisTemplate<String, Long> redisTemplate;
@@ -90,14 +89,7 @@ public class UserController extends BaseController {
 
         // TODO: in the rare case, two users may register with the same name at the same time
         userRepository.save(newUser);
-
-        String uuid = UUID.randomUUID().toString();
-        String key = String.format("ting:register:%s", uuid);
-
-        redisTemplate.opsForValue()
-                .set(key, newUser.getId(), tingConfig.getRegisterConfirmExpiryDuration());
-        awsSesService.send(userRegisterRequest.getEmail(),
-                "Ting 注册确认", buildRegisterConfirmEmailContent(uuid));
+        registerService.sendRegisterConfirmEmail(newUser);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -175,15 +167,5 @@ public class UserController extends BaseController {
         userRepository.save(user);
 
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private String buildRegisterConfirmEmailContent(String uuid) {
-        String url = tingConfig.getRegisterConfirmReturnUrl() + "?key=" + uuid;
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<p>欢迎注册 Ting，请点击下方链接完成注册：</p>");
-        stringBuilder.append(String.format("<p><a href=\"%s\">%s</a></p>", url, url));
-        stringBuilder.append("<p>本邮件由系统自动生成，请勿直接回复。</p>");
-
-        return stringBuilder.toString();
     }
 }
