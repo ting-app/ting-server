@@ -15,10 +15,19 @@ import ting.dto.ResponseError;
 
 import java.util.List;
 
+/**
+ * The global exception handler for controllers.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    /**
+     * Handle method argument not valid exception.
+     *
+     * @param e {@link org.springframework.web.bind.MethodArgumentNotValidException}
+     * @return The error entity {@link ting.dto.ResponseError}
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseError> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e) {
@@ -39,6 +48,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ResponseError("HTTP 消息转换异常"), HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Handle other exceptions.
+     *
+     * @param e {@link java.lang.Throwable}
+     * @return The error entity {@link ting.dto.ResponseError}
+     */
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ResponseError> handleRuntimeException(Throwable e) {
         logger.error("Controller error", e);

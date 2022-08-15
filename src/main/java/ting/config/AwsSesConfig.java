@@ -4,6 +4,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Config for Amazon Simple Email Service.
+ */
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "aws.ses")

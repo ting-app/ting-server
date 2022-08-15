@@ -10,6 +10,9 @@ import ting.support.CurrentUserHandlerMethodArgumentResolver;
 
 import java.util.List;
 
+/**
+ * Some custom configs for Spring Web Mvc.
+ */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
