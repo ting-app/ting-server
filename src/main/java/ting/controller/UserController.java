@@ -18,8 +18,10 @@ import ting.dto.ChangePasswordRequest;
 import ting.dto.ResponseError;
 import ting.dto.UserDto;
 import ting.dto.UserRegisterRequest;
+import ting.dto.VerifyEmailRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
+import ting.service.PasswordService;
 import ting.service.RegisterService;
 
 import javax.annotation.Resource;
@@ -49,6 +51,9 @@ public class UserController extends BaseController {
 
     @Resource
     private RedisTemplate<String, Long> redisTemplate;
+
+    @Autowired
+    private PasswordService passwordService;
 
     /**
      * Create a new user.
@@ -116,9 +121,8 @@ public class UserController extends BaseController {
         }
 
         User user = userRepository.findById(me.getId()).orElse(null);
-        BCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder();
 
-        if (!cryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(),
+        if (!passwordService.matches(changePasswordRequest.getOldPassword(),
                 user.getEncryptedPassword())) {
             return new ResponseEntity<>(new ResponseError("旧密码不正确"), HttpStatus.BAD_REQUEST);
         }
@@ -167,6 +171,39 @@ public class UserController extends BaseController {
 
         userRepository.save(user);
         redisTemplate.delete(registerKey);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Send verify email to newly registered user.
+     *
+     * @param verifyEmailRequest The entity to verify user's email
+     * @return {@link java.lang.Void}
+     */
+    @PostMapping("/users/verifyEmail")
+    public ResponseEntity<?> verifyEmail(
+            @Valid @RequestBody VerifyEmailRequest verifyEmailRequest) {
+        User user = userRepository.findByNameOrEmail(
+                verifyEmailRequest.getNameOrEmail(), verifyEmailRequest.getNameOrEmail());
+
+        if (user == null) {
+            return new ResponseEntity<>(
+                    new ResponseError("USER_DOES_NOT_EXIST", "用户不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        if (!passwordService.matches(verifyEmailRequest.getPassword(),
+                user.getEncryptedPassword())) {
+            return new ResponseEntity<>(new ResponseError("密码不正确"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (user.isVerified()) {
+            return new ResponseEntity<>(
+                    new ResponseError("USER_IS_ALREADY_VERIFIED", "注册已确认"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        registerService.sendRegisterConfirmEmail(user);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

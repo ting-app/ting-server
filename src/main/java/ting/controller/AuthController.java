@@ -3,7 +3,6 @@ package ting.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +13,7 @@ import ting.dto.UserDto;
 import ting.dto.UserLoginRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
+import ting.service.PasswordService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -28,6 +28,9 @@ public class AuthController extends BaseController {
 
     @Autowired
     private RedisIndexedSessionRepository sessionRepository;
+
+    @Autowired
+    private PasswordService passwordService;
 
     /**
      * Login.
@@ -46,9 +49,7 @@ public class AuthController extends BaseController {
             return new ResponseEntity<>(new ResponseError("用户不存在"), HttpStatus.NOT_FOUND);
         }
 
-        BCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder();
-
-        if (!cryptPasswordEncoder.matches(
+        if (!passwordService.matches(
                 userLoginRequest.getPassword(), user.getEncryptedPassword())) {
             return new ResponseEntity<>(new ResponseError("用户名或密码不正确"), HttpStatus.BAD_REQUEST);
         }
