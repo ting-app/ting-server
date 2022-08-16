@@ -203,6 +203,7 @@ public class UserController extends BaseController {
                     HttpStatus.BAD_REQUEST);
         }
 
+        // TODO: if someone keeps sending the request, the redis memory will be exhausted
         registerService.sendRegisterConfirmEmail(user);
 
         return new ResponseEntity<>(HttpStatus.OK);

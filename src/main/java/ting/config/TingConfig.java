@@ -20,6 +20,8 @@ public class TingConfig {
 
     private String registerConfirmReturnUrl;
 
+    private String allowedOrigin;
+
     public int getPasswordStrength() {
         return passwordStrength;
     }
@@ -42,5 +44,13 @@ public class TingConfig {
 
     public void setRegisterConfirmReturnUrl(String registerConfirmReturnUrl) {
         this.registerConfirmReturnUrl = registerConfirmReturnUrl;
+    }
+
+    public String getAllowedOrigin() {
+        return allowedOrigin;
+    }
+
+    public void setAllowedOrigin(String allowedOrigin) {
+        this.allowedOrigin = allowedOrigin;
     }
 }
