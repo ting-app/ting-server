@@ -33,13 +33,13 @@ public class RegisterService {
         String key = String.format("ting:register:%s", uuid);
 
         redisTemplate.opsForValue()
-                .set(key, user.getId(), tingConfig.getRegisterConfirmExpiryDuration());
+                .set(key, user.getId(), tingConfig.getConfirmRegistrationExpiryDuration());
         awsSesService.send(user.getEmail(),
                 "Ting 注册确认", buildRegisterConfirmEmailContent(uuid));
     }
 
     private String buildRegisterConfirmEmailContent(String uuid) {
-        String url = tingConfig.getRegisterConfirmReturnUrl() + "?key=" + uuid;
+        String url = tingConfig.getConfirmRegistrationReturnUrl() + "?key=" + uuid;
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("<p>欢迎注册 Ting，请点击下方链接完成注册：</p>");
         stringBuilder.append(String.format("<p><a href=\"%s\">%s</a></p>", url, url));

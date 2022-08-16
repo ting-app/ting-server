@@ -16,9 +16,9 @@ import java.time.Duration;
 public class TingConfig {
     private int passwordStrength;
 
-    private Duration registerConfirmExpiryDuration;
+    private Duration confirmRegistrationExpiryDuration;
 
-    private String registerConfirmReturnUrl;
+    private String confirmRegistrationReturnUrl;
 
     private String allowedOrigin;
 
@@ -30,20 +30,20 @@ public class TingConfig {
         this.passwordStrength = passwordStrength;
     }
 
-    public Duration getRegisterConfirmExpiryDuration() {
-        return registerConfirmExpiryDuration;
+    public Duration getConfirmRegistrationExpiryDuration() {
+        return confirmRegistrationExpiryDuration;
     }
 
-    public void setRegisterConfirmExpiryDuration(Duration registerConfirmExpiryDuration) {
-        this.registerConfirmExpiryDuration = registerConfirmExpiryDuration;
+    public void setConfirmRegistrationExpiryDuration(Duration confirmRegistrationExpiryDuration) {
+        this.confirmRegistrationExpiryDuration = confirmRegistrationExpiryDuration;
     }
 
-    public String getRegisterConfirmReturnUrl() {
-        return registerConfirmReturnUrl;
+    public String getConfirmRegistrationReturnUrl() {
+        return confirmRegistrationReturnUrl;
     }
 
-    public void setRegisterConfirmReturnUrl(String registerConfirmReturnUrl) {
-        this.registerConfirmReturnUrl = registerConfirmReturnUrl;
+    public void setConfirmRegistrationReturnUrl(String confirmRegistrationReturnUrl) {
+        this.confirmRegistrationReturnUrl = confirmRegistrationReturnUrl;
     }
 
     public String getAllowedOrigin() {
