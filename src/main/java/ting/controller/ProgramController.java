@@ -173,10 +173,10 @@ public class ProgramController extends BaseController {
         program.setDescription(programDto.getDescription());
         program.setUpdatedAt(now);
 
+        programRepository.save(program);
+
         programDto.setId(id);
         programDto.setUpdatedAt(now);
-
-        programRepository.save(program);
 
         return new ResponseEntity<>(programDto, HttpStatus.OK);
     }

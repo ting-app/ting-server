@@ -69,10 +69,10 @@ public class UserController extends BaseController {
             return new ResponseEntity<>(new ResponseError("邮箱地址不合法"), HttpStatus.BAD_REQUEST);
         }
 
-        User userByName = userRepository.findByName(userRegisterRequest.getName());
-        User userByEmail = userRepository.findByEmail(userRegisterRequest.getEmail());
+        User user = userRepository.findByNameOrEmail(
+                userRegisterRequest.getName(), userRegisterRequest.getEmail());
 
-        if (userByName != null || userByEmail != null) {
+        if (user != null) {
             return new ResponseEntity<>(new ResponseError("用户名或邮箱地址已存在"), HttpStatus.BAD_REQUEST);
         }
 
@@ -115,7 +115,7 @@ public class UserController extends BaseController {
             return new ResponseEntity<>(new ResponseError("新密码和确认密码不一致"), HttpStatus.BAD_REQUEST);
         }
 
-        User user = userRepository.findByName(me.getName());
+        User user = userRepository.findById(me.getId()).orElse(null);
         BCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder();
 
         if (!cryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(),
