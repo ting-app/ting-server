@@ -114,7 +114,7 @@ public class UserController extends BaseController {
     @PostMapping("/users/me/changePassword")
     @LoginRequired
     public ResponseEntity<?> changePassword(
-            @Valid ChangePasswordRequest changePasswordRequest, @Me UserDto me) {
+            @Valid @RequestBody ChangePasswordRequest changePasswordRequest, @Me UserDto me) {
         if (!Objects.equals(changePasswordRequest.getNewPassword(),
                 changePasswordRequest.getConfirmNewPassword())) {
             return new ResponseEntity<>(new ResponseError("新密码和确认密码不一致"), HttpStatus.BAD_REQUEST);
@@ -143,8 +143,8 @@ public class UserController extends BaseController {
      * @param key The registration key
      * @return {@link java.lang.Void}
      */
-    @PostMapping("/users/registerConfirm")
-    public ResponseEntity<?> registerConfirm(@RequestParam String key) {
+    @PostMapping("/users/confirmRegistration")
+    public ResponseEntity<?> confirmRegistration(@RequestParam String key) {
         String registerKey = String.format("ting:register:%s", key);
         Long userId = redisTemplate.opsForValue().get(registerKey);
 
