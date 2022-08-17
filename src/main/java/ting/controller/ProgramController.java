@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ting.Constant;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
 import ting.dto.ProgramDto;
@@ -44,10 +45,33 @@ public class ProgramController extends BaseController {
      * @return List of {@link ting.dto.ProgramDto}
      */
     @GetMapping("/programs")
-    public List<ProgramDto> getPrograms(
+    public ResponseEntity<?> getPrograms(
             @RequestParam(required = false) Integer language,
-            @RequestParam(required = false) Integer createdBy) {
-        List<Program> programs = programService.findAll(language, createdBy);
+            @RequestParam(required = false) Integer createdBy,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer pageSize) {
+        if (language != null && language <= 0) {
+            return new ResponseEntity<>(
+                    new ResponseError("language 参数无效"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (page != null && page <= 0) {
+            return new ResponseEntity<>(new ResponseError("page 参数无效"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (pageSize != null) {
+            if (pageSize <= 0) {
+                return new ResponseEntity<>(
+                        new ResponseError("pageSize 参数无效"), HttpStatus.BAD_REQUEST);
+            } else if (pageSize > Constant.MAX_PAGE_SIZE) {
+                return new ResponseEntity<>(
+                        new ResponseError(
+                                String.format("pageSize 超过最大值 %d", Constant.MAX_PAGE_SIZE)),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        List<Program> programs = programService.findAll(language, createdBy, page, pageSize);
         List<ProgramDto> programDtos = programs.stream()
                 .map(program -> {
                     ProgramDto programDto = new ProgramDto();
@@ -62,7 +86,7 @@ public class ProgramController extends BaseController {
                 })
                 .collect(Collectors.toList());
 
-        return programDtos;
+        return new ResponseEntity<>(programDtos, HttpStatus.OK);
     }
 
     /**

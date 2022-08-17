@@ -36,9 +36,11 @@ public class ProgramService {
      *
      * @param language  Language of the Program
      * @param createdBy Who creates the program
+     * @param page      The page number
+     * @param pageSize  Count of programs returned in each page
      * @return List of {@link ting.entity.Program}
      */
-    public List<Program> findAll(Integer language, Integer createdBy) {
+    public List<Program> findAll(Integer language, Integer createdBy, Integer page, Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Program> criteriaQuery = criteriaBuilder.createQuery(Program.class);
         Root<Program> programRoot = criteriaQuery.from(Program.class);
@@ -56,6 +58,11 @@ public class ProgramService {
                 .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 
         TypedQuery<Program> query = entityManager.createQuery(criteriaQuery);
+
+        if (page != null && page > 0 && pageSize != null && pageSize > 0) {
+            query.setFirstResult((page - 1) * pageSize);
+            query.setMaxResults(pageSize);
+        }
 
         return query.getResultList();
     }
