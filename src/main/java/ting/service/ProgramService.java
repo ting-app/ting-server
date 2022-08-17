@@ -1,6 +1,8 @@
 package ting.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ting.entity.Program;
@@ -40,7 +42,8 @@ public class ProgramService {
      * @param pageSize  Count of programs returned in each page
      * @return List of {@link ting.entity.Program}
      */
-    public List<Program> findAll(Integer language, Integer createdBy, Integer page, Integer pageSize) {
+    public List<Program> findAll(
+            Integer language, Integer createdBy, Integer page, Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Program> criteriaQuery = criteriaBuilder.createQuery(Program.class);
         Root<Program> programRoot = criteriaQuery.from(Program.class);
@@ -65,6 +68,36 @@ public class ProgramService {
         }
 
         return query.getResultList();
+    }
+
+    /**
+     * Count programs by language/createdBy.
+     *
+     * @param language  Language of the Program
+     * @param createdBy Who creates the program
+     * @return Count of programs
+     */
+    public long count(Integer language, Integer createdBy) {
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                .withIgnoreNullValues()
+                .withIgnorePaths("id");
+        Program program = new Program();
+
+        if (language != null && language > 0) {
+            program.setLanguage(language);
+        } else {
+            exampleMatcher = exampleMatcher.withIgnorePaths("language");
+        }
+
+        if (createdBy != null) {
+            program.setCreatedBy(createdBy);
+        } else {
+            exampleMatcher = exampleMatcher.withIgnorePaths("createdBy");
+        }
+
+        Example<Program> example = Example.of(program, exampleMatcher);
+
+        return programRepository.count(example);
     }
 
     @Transactional
