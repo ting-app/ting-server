@@ -28,17 +28,17 @@ public class RegisterService {
      *
      * @param user The target user
      */
-    public void sendRegisterConfirmEmail(User user) {
+    public void sendRegistrationConfirmEmail(User user) {
         String uuid = UUID.randomUUID().toString();
         String key = String.format("ting:register:%s", uuid);
 
         redisTemplate.opsForValue()
                 .set(key, user.getId(), tingConfig.getConfirmRegistrationExpiryDuration());
         awsSesService.send(user.getEmail(),
-                "Ting 注册确认", buildRegisterConfirmEmailContent(uuid));
+                "Ting 注册确认", buildRegistrationConfirmEmailContent(uuid));
     }
 
-    private String buildRegisterConfirmEmailContent(String uuid) {
+    private String buildRegistrationConfirmEmailContent(String uuid) {
         String url = tingConfig.getConfirmRegistrationReturnUrl() + "?key=" + uuid;
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("<p>欢迎注册 Ting，请点击下方链接完成注册：</p>");

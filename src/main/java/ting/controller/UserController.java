@@ -94,7 +94,7 @@ public class UserController extends BaseController {
 
         // TODO: in the rare case, two users may register with the same name at the same time
         userRepository.save(newUser);
-        registerService.sendRegisterConfirmEmail(newUser);
+        registerService.sendRegistrationConfirmEmail(newUser);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -204,7 +204,7 @@ public class UserController extends BaseController {
         }
 
         // TODO: if someone keeps sending the request, the redis memory will be exhausted
-        registerService.sendRegisterConfirmEmail(user);
+        registerService.sendRegistrationConfirmEmail(user);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
