@@ -19,7 +19,7 @@ import ting.dto.ResponseError;
 import ting.dto.UserDto;
 import ting.entity.Program;
 import ting.repository.ProgramRepository;
-import ting.service.ProgramService;
+import ting.repository.extend.ProgramRepositoryExtend;
 
 import javax.validation.Valid;
 import java.time.Instant;
@@ -35,13 +35,15 @@ public class ProgramController extends BaseController {
     private ProgramRepository programRepository;
 
     @Autowired
-    private ProgramService programService;
+    private ProgramRepositoryExtend programRepositoryExtend;
 
     /**
      * Get programs.
      *
      * @param language  The language of the program
      * @param createdBy Who creates the program
+     * @param page      The page number
+     * @param pageSize  Count of programs returned in each page
      * @return List of {@link ting.dto.ProgramDto}
      */
     @GetMapping("/programs")
@@ -71,7 +73,8 @@ public class ProgramController extends BaseController {
             }
         }
 
-        List<Program> programs = programService.findAll(language, createdBy, page, pageSize);
+        List<Program> programs = programRepositoryExtend.findAll(
+                language, createdBy, page, pageSize);
         List<ProgramDto> programDtos = programs.stream()
                 .map(program -> {
                     ProgramDto programDto = new ProgramDto();
@@ -164,7 +167,7 @@ public class ProgramController extends BaseController {
             return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
         }
 
-        programService.deleteById(id);
+        programRepositoryExtend.deleteById(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

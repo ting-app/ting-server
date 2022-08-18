@@ -10,7 +10,7 @@ import java.time.Instant;
 public class TingPracticeDto {
     private long id;
 
-    private long userId;
+    private long createdBy;
 
     private long tingId;
 
@@ -33,12 +33,12 @@ public class TingPracticeDto {
         this.id = id;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getCreatedBy() {
+        return createdBy;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setCreatedBy(long createdBy) {
+        this.createdBy = createdBy;
     }
 
     public long getTingId() {

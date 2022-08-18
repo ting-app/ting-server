@@ -10,7 +10,7 @@ import java.time.Instant;
 @Entity
 public class TingPractice extends BaseEntity {
     @Column
-    private long userId;
+    private long createdBy;
 
     @Column
     private long tingId;
@@ -27,12 +27,12 @@ public class TingPractice extends BaseEntity {
     @Column
     private Instant createdAt;
 
-    public long getUserId() {
-        return userId;
+    public long getCreatedBy() {
+        return createdBy;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setCreatedBy(long createdBy) {
+        this.createdBy = createdBy;
     }
 
     public long getTingId() {

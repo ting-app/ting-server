@@ -1,11 +1,11 @@
-package ting.service;
+package ting.repository.extend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ting.entity.Program;
 import ting.repository.ProgramRepository;
@@ -14,10 +14,10 @@ import ting.repository.TingRepository;
 import java.util.List;
 
 /**
- * The service that manipulates program entities.
+ * The extended repository that manipulates program entities.
  */
-@Service
-public class ProgramService {
+@Repository
+public class ProgramRepositoryExtend {
     @Autowired
     private ProgramRepository programRepository;
 
@@ -25,7 +25,7 @@ public class ProgramService {
     private TingRepository tingRepository;
 
     /**
-     * Find programs by language/createdBy.
+     * Find programs.
      *
      * @param language  Language of the Program
      * @param createdBy Who creates the program
