@@ -1,7 +1,6 @@
 package ting.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -86,11 +85,8 @@ public class ProgramController extends BaseController {
                     return programDto;
                 })
                 .collect(Collectors.toList());
-        long count = programService.count(language, createdBy);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("X-Total-Count", String.valueOf(count));
 
-        return new ResponseEntity<>(programDtos, httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(programDtos, HttpStatus.OK);
     }
 
     /**
