@@ -14,6 +14,7 @@ import ting.annotation.Me;
 import ting.dto.ResponseError;
 import ting.dto.TingPracticeDto;
 import ting.dto.UserDto;
+import ting.entity.BaseEntity;
 import ting.entity.Ting;
 import ting.entity.TingPractice;
 import ting.repository.TingPracticeRepository;
@@ -23,6 +24,7 @@ import ting.repository.extend.TingPracticeRepositoryExtend;
 import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -113,6 +115,18 @@ public class TingPracticeController extends BaseController {
                     return tingPracticeDto;
                 })
                 .collect(Collectors.toList());
+        List<Long> tingIds = tingPracticeDtos.stream()
+                .map(TingPracticeDto::getTingId)
+                .distinct()
+                .toList();
+        List<Ting> tings = tingRepository.findByIdIn(tingIds);
+        Map<Long, Ting> tingMap = tings.stream()
+                .collect(Collectors.toMap(BaseEntity::getId, it -> it));
+
+        for (TingPracticeDto tingPracticeDto : tingPracticeDtos) {
+            Ting ting = tingMap.get(tingPracticeDto.getTingId());
+            tingPracticeDto.setTingTitle(ting.getTitle());
+        }
 
         return new ResponseEntity<>(tingPracticeDtos, HttpStatus.OK);
     }

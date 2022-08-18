@@ -14,6 +14,8 @@ public class TingPracticeDto {
 
     private long tingId;
 
+    private String tingTitle;
+
     @NotBlank
     private String content;
 
@@ -47,6 +49,14 @@ public class TingPracticeDto {
 
     public void setTingId(long tingId) {
         this.tingId = tingId;
+    }
+
+    public String getTingTitle() {
+        return tingTitle;
+    }
+
+    public void setTingTitle(String tingTitle) {
+        this.tingTitle = tingTitle;
     }
 
     public String getContent() {
