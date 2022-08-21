@@ -32,6 +32,7 @@ ting:
   confirmRegistrationExpiryDuration: ${TING_CONFIRM_REGISTRATION_EXPIRY_DURATION:24h}
   confirmRegistrationReturnUrl: ${TING_CONFIRM_REGISTRATION_RETURN_URL:http://localhost:5000/#/confirmRegistration}
   allowedOrigin: ${TING_ALLOWED_ORIGIN:http://localhost:5000}
+  nhkApiHost: ${TING_NHK_API_HOST:https://nhk.dekiru.app}
   azure:
     storage:
       connectionString: ${AZURE_STORAGE_CONNECTION_STRING}
