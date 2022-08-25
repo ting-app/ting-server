@@ -174,7 +174,8 @@ public class ProgramController extends BaseController {
             return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.NOT_FOUND);
         }
 
-        if (!program.getVisible() && (me == null || !Objects.equals(program.getCreatedBy(), me.getId()))) {
+        if (!program.getVisible()
+                && (me == null || !Objects.equals(program.getCreatedBy(), me.getId()))) {
             return new ResponseEntity<>(new ResponseError("节目无权访问"), HttpStatus.FORBIDDEN);
         }
 
