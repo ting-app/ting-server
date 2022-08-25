@@ -22,6 +22,9 @@ public class ProgramDto {
     @NotNull(message = "语言不能为空")
     private Integer language;
 
+    @NotNull(message = "可见性不能为空")
+    private Boolean visible;
+
     private Long createdBy;
 
     private Instant createdAt;
@@ -58,6 +61,14 @@ public class ProgramDto {
 
     public void setLanguage(Integer language) {
         this.language = language;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 
     public Long getCreatedBy() {

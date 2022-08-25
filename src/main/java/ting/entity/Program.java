@@ -19,6 +19,9 @@ public class Program extends BaseEntity {
     private Integer language;
 
     @Column
+    private Boolean visible;
+
+    @Column
     private Long createdBy;
 
     @Column
@@ -49,6 +52,14 @@ public class Program extends BaseEntity {
 
     public void setLanguage(Integer language) {
         this.language = language;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 
     public Long getCreatedBy() {

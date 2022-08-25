@@ -83,6 +83,7 @@ public class ProgramController extends BaseController {
                     programDto.setTitle(program.getTitle());
                     programDto.setDescription(program.getDescription());
                     programDto.setLanguage(program.getLanguage());
+                    programDto.setVisible(program.getVisible());
                     programDto.setCreatedAt(program.getCreatedAt());
                     programDto.setUpdatedAt(program.getUpdatedAt());
 
@@ -108,6 +109,7 @@ public class ProgramController extends BaseController {
         Program program = new Program();
         program.setTitle(programDto.getTitle());
         program.setLanguage(programDto.getLanguage());
+        program.setVisible(programDto.getVisible());
         program.setDescription(programDto.getDescription());
         program.setCreatedBy(me.getId());
         program.setCreatedAt(now);
@@ -142,6 +144,7 @@ public class ProgramController extends BaseController {
         programDto.setTitle(program.getTitle());
         programDto.setDescription(program.getDescription());
         programDto.setLanguage(program.getLanguage());
+        programDto.setVisible(program.getVisible());
         programDto.setCreatedBy(program.getCreatedBy());
         programDto.setCreatedAt(program.getCreatedAt());
 
@@ -197,8 +200,9 @@ public class ProgramController extends BaseController {
 
         Instant now = Instant.now();
         program.setTitle(programDto.getTitle());
-        program.setLanguage(programDto.getLanguage());
         program.setDescription(programDto.getDescription());
+        program.setLanguage(programDto.getLanguage());
+        program.setVisible(programDto.getVisible());
         program.setUpdatedAt(now);
 
         programRepository.save(program);
