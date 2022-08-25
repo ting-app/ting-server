@@ -11,6 +11,14 @@ import ting.entity.Program;
 import ting.repository.ProgramRepository;
 import ting.repository.TingRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,8 +32,40 @@ public class ProgramRepositoryExtend {
     @Autowired
     private TingRepository tingRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     /**
-     * Find programs.
+     * Find all visible programs.
+     *
+     * @param language Language of the Program
+     * @param page     The page number
+     * @param pageSize Count of programs returned in each page
+     * @return List of {@link ting.entity.Program}
+     */
+    public List<Program> findAllVisible(
+            Integer language, int page, int pageSize) {
+        if (page <= 0 || pageSize <= 0) {
+            throw new IllegalArgumentException("Invalid page or pageSize");
+        }
+
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                .withIgnoreNullValues();
+        Program program = new Program();
+        program.setVisible(true);
+
+        if (language != null && language > 0) {
+            program.setLanguage(language);
+        }
+
+        Example<Program> example = Example.of(program, exampleMatcher);
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+
+        return programRepository.findAll(example, pageable).getContent();
+    }
+
+    /**
+     * Find all programs that are visible to the specified user.
      *
      * @param language  Language of the Program
      * @param createdBy Who creates the program
@@ -33,29 +73,35 @@ public class ProgramRepositoryExtend {
      * @param pageSize  Count of programs returned in each page
      * @return List of {@link ting.entity.Program}
      */
-    public List<Program> findAll(
-            Integer language, Long createdBy, Integer page, Integer pageSize) {
-        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-                .withIgnoreNullValues();
-        Program program = new Program();
+    public List<Program> findAllVisibleTo(
+            Integer language, long createdBy, int page, int pageSize) {
+        if (page <= 0 || pageSize <= 0) {
+            throw new IllegalArgumentException("Invalid page or pageSize");
+        }
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Program> criteriaQuery = criteriaBuilder.createQuery(Program.class);
+        Root<Program> programRoot = criteriaQuery.from(Program.class);
+        List<Predicate> predicates = new ArrayList<>();
 
         if (language != null && language > 0) {
-            program.setLanguage(language);
+            predicates.add(criteriaBuilder.equal(programRoot.get("language"), language));
         }
 
-        if (createdBy != null) {
-            program.setCreatedBy(createdBy);
-        }
+        // The visible programs plus the programs created by createdBy
+        predicates.add(criteriaBuilder.or(
+                criteriaBuilder.equal(programRoot.get("visible"), true),
+                criteriaBuilder.equal(programRoot.get("createdBy"), createdBy)
+        ));
 
-        Example<Program> example = Example.of(program, exampleMatcher);
+        criteriaQuery.select(programRoot)
+                .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 
-        if (page != null && page > 0 && pageSize != null && pageSize > 0) {
-            Pageable pageable = PageRequest.of(page - 1, pageSize);
+        TypedQuery<Program> query = entityManager.createQuery(criteriaQuery);
+        query.setFirstResult((page - 1) * pageSize);
+        query.setMaxResults(pageSize);
 
-            return programRepository.findAll(example, pageable).getContent();
-        } else {
-            return programRepository.findAll(example);
-        }
+        return query.getResultList();
     }
 
     /**

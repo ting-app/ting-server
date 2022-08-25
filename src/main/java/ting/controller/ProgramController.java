@@ -23,6 +23,7 @@ import ting.repository.extend.ProgramRepositoryExtend;
 
 import javax.validation.Valid;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -39,43 +40,76 @@ public class ProgramController extends BaseController {
     private ProgramRepositoryExtend programRepositoryExtend;
 
     /**
+     * Get my programs.
+     *
+     * @param me Current user
+     * @return List of {@link ting.dto.ProgramDto}
+     */
+    @GetMapping("/users/me/programs")
+    @LoginRequired
+    public List<ProgramDto> getMyPrograms(@Me UserDto me) {
+        List<Program> programs = programRepository.findByCreatedBy(me.getId());
+        List<ProgramDto> programDtos = programs.stream()
+                .map(program -> {
+                    ProgramDto programDto = new ProgramDto();
+                    programDto.setId(program.getId());
+                    programDto.setTitle(program.getTitle());
+                    programDto.setDescription(program.getDescription());
+                    programDto.setLanguage(program.getLanguage());
+                    programDto.setVisible(program.getVisible());
+                    programDto.setCreatedAt(program.getCreatedAt());
+                    programDto.setUpdatedAt(program.getUpdatedAt());
+
+                    return programDto;
+                })
+                .collect(Collectors.toList());
+
+        return programDtos;
+    }
+
+    /**
      * Get programs.
      *
-     * @param language  The language of the program
-     * @param createdBy Who creates the program
-     * @param page      The page number
-     * @param pageSize  Count of programs returned in each page
+     * @param language The language of the program
+     * @param page     The page number
+     * @param pageSize Count of programs returned in each page
+     * @param me       Current user
      * @return List of {@link ting.dto.ProgramDto}
      */
     @GetMapping("/programs")
     public ResponseEntity<?> getPrograms(
-            @RequestParam(required = false) Integer language,
-            @RequestParam(required = false) Long createdBy,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer pageSize) {
+            @RequestParam(required = false) Integer language, int page, int pageSize,
+            @Me UserDto me) {
         if (language != null && language <= 0) {
             return new ResponseEntity<>(
                     new ResponseError("language 参数无效"), HttpStatus.BAD_REQUEST);
         }
 
-        if (page != null && page <= 0) {
+        if (page <= 0) {
             return new ResponseEntity<>(new ResponseError("page 参数无效"), HttpStatus.BAD_REQUEST);
         }
 
-        if (pageSize != null) {
-            if (pageSize <= 0) {
-                return new ResponseEntity<>(
-                        new ResponseError("pageSize 参数无效"), HttpStatus.BAD_REQUEST);
-            } else if (pageSize > Constant.MAX_PAGE_SIZE) {
-                return new ResponseEntity<>(
-                        new ResponseError(
-                                String.format("pageSize 超过最大值 %d", Constant.MAX_PAGE_SIZE)),
-                        HttpStatus.BAD_REQUEST);
-            }
+        if (pageSize <= 0) {
+            return new ResponseEntity<>(
+                    new ResponseError("pageSize 参数无效"), HttpStatus.BAD_REQUEST);
+        } else if (pageSize > Constant.MAX_PAGE_SIZE) {
+            return new ResponseEntity<>(
+                    new ResponseError(
+                            String.format("pageSize 超过最大值 %d", Constant.MAX_PAGE_SIZE)),
+                    HttpStatus.BAD_REQUEST);
         }
 
-        List<Program> programs = programRepositoryExtend.findAll(
-                language, createdBy, page, pageSize);
+        List<Program> programs = new ArrayList<>();
+
+        if (me == null) {
+            // Anonymous user, get all visible programs
+            programs = programRepositoryExtend.findAllVisible(language, page, pageSize);
+        } else {
+            // Otherwise, get all visible programs plus the invisible programs created by me
+            programs = programRepositoryExtend.findAllVisibleTo(
+                    language, me.getId(), page, pageSize);
+        }
+
         List<ProgramDto> programDtos = programs.stream()
                 .map(program -> {
                     ProgramDto programDto = new ProgramDto();
