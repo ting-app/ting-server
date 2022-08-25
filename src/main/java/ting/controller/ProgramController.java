@@ -163,14 +163,19 @@ public class ProgramController extends BaseController {
      * Get program id.
      *
      * @param id The id of program
+     * @param me Current user
      * @return {@link ting.dto.ProgramDto}
      */
     @GetMapping("/programs/{id}")
-    public ResponseEntity<?> getProgram(@PathVariable long id) {
+    public ResponseEntity<?> getProgram(@PathVariable long id, @Me UserDto me) {
         Program program = programRepository.findById(id).orElse(null);
 
         if (program == null) {
             return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        if (!program.getVisible() && (me == null || !Objects.equals(program.getCreatedBy(), me.getId()))) {
+            return new ResponseEntity<>(new ResponseError("节目无权访问"), HttpStatus.FORBIDDEN);
         }
 
         ProgramDto programDto = new ProgramDto();

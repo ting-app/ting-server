@@ -190,11 +190,15 @@ public class TingController extends BaseController {
      * @return List of {@link ting.dto.TingDto}
      */
     @GetMapping("/tings")
-    public ResponseEntity<?> getTings(@RequestParam long programId) {
+    public ResponseEntity<?> getTings(@RequestParam long programId, @Me UserDto me) {
         Program program = programRepository.findById(programId).orElse(null);
 
         if (program == null) {
             return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.NOT_FOUND);
+        }
+
+        if (!program.getVisible() && (me == null || !Objects.equals(program.getCreatedBy(), me.getId()))) {
+            return new ResponseEntity<>(new ResponseError("节目无权访问"), HttpStatus.FORBIDDEN);
         }
 
         List<Ting> tings = tingRepository.findByProgramId(programId);
