@@ -24,6 +24,7 @@ import ting.repository.extend.ProgramRepositoryExtend;
 import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +50,7 @@ public class ProgramController extends BaseController {
     @GetMapping("/programs")
     public ResponseEntity<?> getPrograms(
             @RequestParam(required = false) Integer language,
-            @RequestParam(required = false) Integer createdBy,
+            @RequestParam(required = false) Long createdBy,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer pageSize) {
         if (language != null && language <= 0) {
@@ -163,7 +164,7 @@ public class ProgramController extends BaseController {
             return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.NOT_FOUND);
         }
 
-        if (me.getId() != program.getCreatedBy()) {
+        if (!Objects.equals(me.getId(), program.getCreatedBy())) {
             return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
         }
 
@@ -190,7 +191,7 @@ public class ProgramController extends BaseController {
             return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.NOT_FOUND);
         }
 
-        if (me.getId() != program.getCreatedBy()) {
+        if (!Objects.equals(me.getId(), program.getCreatedBy())) {
             return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
         }
 

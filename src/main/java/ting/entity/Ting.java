@@ -10,7 +10,7 @@ import java.time.Instant;
 @Entity
 public class Ting extends BaseEntity {
     @Column
-    private long programId;
+    private Long programId;
 
     @Column
     private String title;
@@ -30,11 +30,11 @@ public class Ting extends BaseEntity {
     @Column
     private Instant updatedAt;
 
-    public long getProgramId() {
+    public Long getProgramId() {
         return programId;
     }
 
-    public void setProgramId(long programId) {
+    public void setProgramId(Long programId) {
         this.programId = programId;
     }
 

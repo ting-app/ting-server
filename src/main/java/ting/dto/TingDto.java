@@ -1,6 +1,7 @@
 package ting.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
 
@@ -8,9 +9,10 @@ import java.time.Instant;
  * The data transfer object that represents a ting.
  */
 public class TingDto {
-    private long id;
+    private Long id;
 
-    private long programId;
+    @NotNull(message = "节目 id 不能为空")
+    private Long programId;
 
     @NotBlank(message = "标题不能为空")
     @Size(max = 100, message = "标题不能超过100个字符")
@@ -30,19 +32,19 @@ public class TingDto {
 
     private Instant updatedAt;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getProgramId() {
+    public Long getProgramId() {
         return programId;
     }
 
-    public void setProgramId(long programId) {
+    public void setProgramId(Long programId) {
         this.programId = programId;
     }
 

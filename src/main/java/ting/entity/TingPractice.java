@@ -10,28 +10,28 @@ import java.time.Instant;
 @Entity
 public class TingPractice extends BaseEntity {
     @Column
-    private long tingId;
+    private Long tingId;
 
     @Column(columnDefinition = "text")
     private String content;
 
     @Column
-    private float score;
+    private Float score;
 
     @Column
-    private long timeCostInSeconds;
+    private Long timeCostInSeconds;
 
     @Column
-    private long createdBy;
+    private Long createdBy;
 
     @Column
     private Instant createdAt;
 
-    public long getTingId() {
+    public Long getTingId() {
         return tingId;
     }
 
-    public void setTingId(long tingId) {
+    public void setTingId(Long tingId) {
         this.tingId = tingId;
     }
 
@@ -43,27 +43,27 @@ public class TingPractice extends BaseEntity {
         this.content = content;
     }
 
-    public float getScore() {
+    public Float getScore() {
         return score;
     }
 
-    public void setScore(float score) {
+    public void setScore(Float score) {
         this.score = score;
     }
 
-    public long getTimeCostInSeconds() {
+    public Long getTimeCostInSeconds() {
         return timeCostInSeconds;
     }
 
-    public void setTimeCostInSeconds(long timeCostInSeconds) {
+    public void setTimeCostInSeconds(Long timeCostInSeconds) {
         this.timeCostInSeconds = timeCostInSeconds;
     }
 
-    public long getCreatedBy() {
+    public Long getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(long createdBy) {
+    public void setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
     }
 

@@ -125,7 +125,12 @@ public class TingPracticeController extends BaseController {
 
         for (TingPracticeDto tingPracticeDto : tingPracticeDtos) {
             Ting ting = tingMap.get(tingPracticeDto.getTingId());
-            tingPracticeDto.setTingTitle(ting.getTitle());
+
+            if (ting != null) {
+                tingPracticeDto.setTingTitle(ting.getTitle());
+            } else {
+                tingPracticeDto.setTingTitle("听力已删除");
+            }
         }
 
         return new ResponseEntity<>(tingPracticeDtos, HttpStatus.OK);

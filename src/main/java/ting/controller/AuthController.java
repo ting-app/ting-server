@@ -54,7 +54,7 @@ public class AuthController extends BaseController {
             return new ResponseEntity<>(new ResponseError("用户名或密码不正确"), HttpStatus.BAD_REQUEST);
         }
 
-        if (!user.isVerified()) {
+        if (!user.getVerified()) {
             return new ResponseEntity<>(
                     new ResponseError("USER_IS_NOT_VERIFIED", "用户邮箱未验证"),
                     HttpStatus.BAD_REQUEST);

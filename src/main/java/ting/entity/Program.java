@@ -16,10 +16,10 @@ public class Program extends BaseEntity {
     private String description;
 
     @Column
-    private int language;
+    private Integer language;
 
     @Column
-    private long createdBy;
+    private Long createdBy;
 
     @Column
     private Instant createdAt;
@@ -43,19 +43,19 @@ public class Program extends BaseEntity {
         this.description = description;
     }
 
-    public int getLanguage() {
+    public Integer getLanguage() {
         return language;
     }
 
-    public void setLanguage(int language) {
+    public void setLanguage(Integer language) {
         this.language = language;
     }
 
-    public long getCreatedBy() {
+    public Long getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(long createdBy) {
+    public void setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
     }
 

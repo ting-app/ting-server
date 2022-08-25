@@ -19,7 +19,7 @@ public class User extends BaseEntity {
     private String encryptedPassword;
 
     @Column
-    private boolean verified;
+    private Boolean verified;
 
     @Column
     private Instant createdAt;
@@ -48,11 +48,11 @@ public class User extends BaseEntity {
         this.encryptedPassword = encryptedPassword;
     }
 
-    public boolean isVerified() {
+    public Boolean getVerified() {
         return verified;
     }
 
-    public void setVerified(boolean verified) {
+    public void setVerified(Boolean verified) {
         this.verified = verified;
     }
 

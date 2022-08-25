@@ -1,6 +1,7 @@
 package ting.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
 
@@ -8,7 +9,7 @@ import java.time.Instant;
  * The data transfer object that represents a program.
  */
 public class ProgramDto {
-    private long id;
+    private Long id;
 
     @NotBlank(message = "标题不能为空")
     @Size(max = 100, message = "标题不能超过100个字符")
@@ -18,19 +19,20 @@ public class ProgramDto {
     @Size(max = 200, message = "描述不能超过200个字符")
     private String description;
 
-    private int language;
+    @NotNull(message = "语言不能为空")
+    private Integer language;
 
-    private long createdBy;
+    private Long createdBy;
 
     private Instant createdAt;
 
     private Instant updatedAt;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -50,19 +52,19 @@ public class ProgramDto {
         this.description = description;
     }
 
-    public int getLanguage() {
+    public Integer getLanguage() {
         return language;
     }
 
-    public void setLanguage(int language) {
+    public void setLanguage(Integer language) {
         this.language = language;
     }
 
-    public long getCreatedBy() {
+    public Long getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(long createdBy) {
+    public void setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
     }
 

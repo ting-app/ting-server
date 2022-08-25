@@ -34,22 +34,17 @@ public class ProgramRepositoryExtend {
      * @return List of {@link ting.entity.Program}
      */
     public List<Program> findAll(
-            Integer language, Integer createdBy, Integer page, Integer pageSize) {
+            Integer language, Long createdBy, Integer page, Integer pageSize) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-                .withIgnoreNullValues()
-                .withIgnorePaths("id");
+                .withIgnoreNullValues();
         Program program = new Program();
 
         if (language != null && language > 0) {
             program.setLanguage(language);
-        } else {
-            exampleMatcher = exampleMatcher.withIgnorePaths("language");
         }
 
         if (createdBy != null) {
             program.setCreatedBy(createdBy);
-        } else {
-            exampleMatcher = exampleMatcher.withIgnorePaths("createdBy");
         }
 
         Example<Program> example = Example.of(program, exampleMatcher);
@@ -70,22 +65,17 @@ public class ProgramRepositoryExtend {
      * @param createdBy Who creates the program
      * @return Count of programs
      */
-    public long count(Integer language, Integer createdBy) {
+    public long count(Integer language, Long createdBy) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-                .withIgnoreNullValues()
-                .withIgnorePaths("id");
+                .withIgnoreNullValues();
         Program program = new Program();
 
         if (language != null && language > 0) {
             program.setLanguage(language);
-        } else {
-            exampleMatcher = exampleMatcher.withIgnorePaths("language");
         }
 
         if (createdBy != null) {
             program.setCreatedBy(createdBy);
-        } else {
-            exampleMatcher = exampleMatcher.withIgnorePaths("createdBy");
         }
 
         Example<Program> example = Example.of(program, exampleMatcher);

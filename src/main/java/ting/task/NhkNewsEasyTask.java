@@ -62,7 +62,7 @@ public class NhkNewsEasyTask {
         List<Ting> tingList = newsList.stream()
                 .map(news -> {
                     Ting ting = new Ting();
-                    ting.setProgramId(1);
+                    ting.setProgramId(1L);
                     ting.setTitle(news.getTitle());
                     ting.setDescription(extractText(trimRuby(news.getOutlineWithRuby())));
                     ting.setAudioUrl(news.getM3u8Url());

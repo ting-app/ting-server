@@ -2,52 +2,56 @@ package ting.dto;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
 /**
  * The data transfer object that represents a practice record of a ting.
  */
 public class TingPracticeDto {
-    private long id;
+    private Long id;
 
-    private long createdBy;
+    private Long createdBy;
 
-    private long tingId;
+    @NotNull(message = "听力 id 不能为空")
+    private Long tingId;
 
     private String tingTitle;
 
     @NotBlank
     private String content;
 
-    @Min(0)
-    private float score;
+    @NotNull(message = "分数不能为空")
+    @Min(value = 0, message = "分数的最小值为0")
+    private Float score;
 
-    @Min(0)
-    private long timeCostInSeconds;
+    @NotNull(message = "耗时不能为空")
+    @Min(value = 0, message = "耗时的最小值为0")
+    private Long timeCostInSeconds;
 
     private Instant createdAt;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getCreatedBy() {
+    public Long getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(long createdBy) {
+    public void setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
     }
 
-    public long getTingId() {
+    public Long getTingId() {
         return tingId;
     }
 
-    public void setTingId(long tingId) {
+    public void setTingId(Long tingId) {
         this.tingId = tingId;
     }
 
@@ -67,19 +71,19 @@ public class TingPracticeDto {
         this.content = content;
     }
 
-    public float getScore() {
+    public Float getScore() {
         return score;
     }
 
-    public void setScore(float score) {
+    public void setScore(Float score) {
         this.score = score;
     }
 
-    public long getTimeCostInSeconds() {
+    public Long getTimeCostInSeconds() {
         return timeCostInSeconds;
     }
 
-    public void setTimeCostInSeconds(long timeCostInSeconds) {
+    public void setTimeCostInSeconds(Long timeCostInSeconds) {
         this.timeCostInSeconds = timeCostInSeconds;
     }
 

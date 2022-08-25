@@ -30,14 +30,11 @@ public class TingPracticeRepositoryExtend {
      */
     public List<TingPractice> findAll(Long createdBy, Integer page, Integer pageSize) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-                .withIgnoreNullValues()
-                .withIgnorePaths("id", "tingId", "score", "timeCostInSeconds");
+                .withIgnoreNullValues();
         TingPractice tingPractice = new TingPractice();
 
         if (createdBy != null) {
             tingPractice.setCreatedBy(createdBy);
-        } else {
-            exampleMatcher = exampleMatcher.withIgnorePaths("createdBy");
         }
 
         Example<TingPractice> example = Example.of(tingPractice, exampleMatcher);

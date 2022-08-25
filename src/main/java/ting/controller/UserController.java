@@ -59,12 +59,11 @@ public class UserController extends BaseController {
      * Create a new user.
      *
      * @param userRegisterRequest The request entity to create a new user
-     * @param session             {@link javax.servlet.http.HttpSession}
      * @return Created new user {@link ting.dto.UserDto}
      */
     @PostMapping("/users")
     public ResponseEntity<?> createUser(
-            @Valid @RequestBody UserRegisterRequest userRegisterRequest, HttpSession session) {
+            @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
         if (!Objects.equals(userRegisterRequest.getPassword(),
                 userRegisterRequest.getConfirmPassword())) {
             return new ResponseEntity<>(new ResponseError("两次密码不一致"), HttpStatus.BAD_REQUEST);
@@ -161,7 +160,7 @@ public class UserController extends BaseController {
                     new ResponseError("USER_DOES_NOT_EXIST", "用户不存在"), HttpStatus.NOT_FOUND);
         }
 
-        if (user.isVerified()) {
+        if (user.getVerified()) {
             return new ResponseEntity<>(
                     new ResponseError("USER_IS_ALREADY_VERIFIED", "注册已确认"),
                     HttpStatus.BAD_REQUEST);
@@ -197,7 +196,7 @@ public class UserController extends BaseController {
             return new ResponseEntity<>(new ResponseError("密码不正确"), HttpStatus.BAD_REQUEST);
         }
 
-        if (user.isVerified()) {
+        if (user.getVerified()) {
             return new ResponseEntity<>(
                     new ResponseError("USER_IS_ALREADY_VERIFIED", "注册已确认"),
                     HttpStatus.BAD_REQUEST);

@@ -26,6 +26,7 @@ import ting.service.AzureBlobStorageService;
 import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -58,7 +59,7 @@ public class TingController extends BaseController {
             return new ResponseEntity<>(new ResponseError("节目不存在"), HttpStatus.BAD_REQUEST);
         }
 
-        if (me.getId() != program.getCreatedBy()) {
+        if (!Objects.equals(me.getId(), program.getCreatedBy())) {
             return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
         }
 
@@ -99,7 +100,7 @@ public class TingController extends BaseController {
 
         Program program = programRepository.findById(ting.getProgramId()).orElse(null);
 
-        if (program != null && me.getId() != program.getCreatedBy()) {
+        if (program != null && !Objects.equals(me.getId(), program.getCreatedBy())) {
             return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
         }
 
@@ -128,11 +129,11 @@ public class TingController extends BaseController {
 
         Program program = programRepository.findById(ting.getProgramId()).orElse(null);
 
-        if (program != null && me.getId() != program.getCreatedBy()) {
+        if (program != null && !Objects.equals(me.getId(), program.getCreatedBy())) {
             return new ResponseEntity<>(new ResponseError("节目创建人与当前用户不一致"), HttpStatus.FORBIDDEN);
         }
 
-        if (tingDto.getProgramId() != ting.getProgramId()) {
+        if (!Objects.equals(tingDto.getProgramId(), ting.getProgramId())) {
             return new ResponseEntity<>(new ResponseError("听力所属的节目不一致"), HttpStatus.FORBIDDEN);
         }
 
