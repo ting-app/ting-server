@@ -3,10 +3,10 @@
 
 ## Getting Started
 ### Rrerequisite
-1. An Azure Storage account
+1. Azure Storage account
     1. Create a container under `Containers`
     2. Add a cors setting under `Resource sharing (CORS)`
-2. An Amazon Simple Email Service
+2. Amazon Simple Email Service
     1. Add a verified identity
     2. Create an IAM user that has the permission of `AmazonSESFullAccess`, and export `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` as environment variables
 
