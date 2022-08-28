@@ -2,13 +2,31 @@
 一个更自由的听力平台。
 
 ## Getting Started
-### Rrerequisite
-1. Azure Storage account
-    1. Create a container under `Containers`
-    2. Add a cors setting under `Resource sharing (CORS)`
+### Prerequisite
+1. Amazon S3
+    1. Create a bucket
+    2. Edit `Cross-origin resource sharing (CORS)` setting under the `Permissions` tab:
+        ```
+        [
+            {
+                "AllowedHeaders": [
+                    "*"
+                ],
+                "AllowedMethods": [
+                    "PUT",
+                    "GET"
+                ],
+                "AllowedOrigins": [
+                    "http://example.com"
+                ],
+                "ExposeHeaders": []
+            }
+        ]
+        ```
 2. Amazon Simple Email Service
     1. Add a verified identity
-    2. Create an IAM user that has the permission of `AmazonSESFullAccess`, then export `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` as environment variables
+3. AWS IAM User
+    1. Create an IAM user that has the permission of `AmazonSESFullAccess` and `AmazonS3FullAccess`, then export `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` as environment variables
 
 ## License
 [MIT](LICENSE)
