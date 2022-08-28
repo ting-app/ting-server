@@ -21,7 +21,6 @@ import ting.entity.Ting;
 import ting.repository.ProgramRepository;
 import ting.repository.TingRepository;
 import ting.service.AwsS3Service;
-import ting.service.AzureBlobStorageService;
 
 import javax.validation.Valid;
 import java.time.Instant;
@@ -39,9 +38,6 @@ public class TingController extends BaseController {
 
     @Autowired
     private ProgramRepository programRepository;
-
-    @Autowired
-    private AzureBlobStorageService azureBlobStorageService;
 
     @Autowired
     private AwsS3Service awsS3Service;

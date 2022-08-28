@@ -60,7 +60,7 @@ public class AwsS3Service {
                 .key(keyName)
                 .build();
         PutObjectPresignRequest putObjectPresignRequest = PutObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(5))
+                .signatureDuration(Duration.ofMinutes(awsS3Config.getWriteExpiryTimeInMinutes()))
                 .putObjectRequest(putObjectRequest)
                 .build();
         PresignedPutObjectRequest presignedPutObjectRequest = s3Presigner.presignPutObject(
@@ -75,7 +75,7 @@ public class AwsS3Service {
                 .key(keyName)
                 .build();
         GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(30))
+                .signatureDuration(Duration.ofMinutes(awsS3Config.getReadExpiryTimeInMinutes()))
                 .getObjectRequest(getObjectRequest)
                 .build();
         PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(

@@ -15,6 +15,10 @@ public class AwsS3Config {
 
     private String bucketName;
 
+    private int readExpiryTimeInMinutes;
+
+    private int writeExpiryTimeInMinutes;
+
     public String getRegion() {
         return region;
     }
@@ -29,5 +33,21 @@ public class AwsS3Config {
 
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
+    }
+
+    public int getReadExpiryTimeInMinutes() {
+        return readExpiryTimeInMinutes;
+    }
+
+    public void setReadExpiryTimeInMinutes(int readExpiryTimeInMinutes) {
+        this.readExpiryTimeInMinutes = readExpiryTimeInMinutes;
+    }
+
+    public int getWriteExpiryTimeInMinutes() {
+        return writeExpiryTimeInMinutes;
+    }
+
+    public void setWriteExpiryTimeInMinutes(int writeExpiryTimeInMinutes) {
+        this.writeExpiryTimeInMinutes = writeExpiryTimeInMinutes;
     }
 }

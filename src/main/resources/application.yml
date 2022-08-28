@@ -33,12 +33,6 @@ ting:
   confirmRegistrationReturnUrl: ${TING_CONFIRM_REGISTRATION_RETURN_URL:http://localhost:5000/#/confirmRegistration}
   allowedOrigin: ${TING_ALLOWED_ORIGIN:http://localhost:5000}
   nhkApiHost: ${TING_NHK_API_HOST:https://nhk.dekiru.app}
-  azure:
-    storage:
-      connectionString: ${AZURE_STORAGE_CONNECTION_STRING}
-      containerName: ${AZURE_STORAGE_CONTAINER_NAME:ting}
-      readExpiryTimeInMinutes: ${AZURE_STORAGE_READ_EXPIRY_TIME_IN_MINUTES:30}
-      writeExpiryTimeInMinutes: ${AZURE_STORAGE_WRITE_EXPIRY_TIME_IN_MINUTES:5}
   aws:
     ses:
       region: ${AWS_SES_REGION:us-west-2}
@@ -46,3 +40,5 @@ ting:
     s3:
       region: ${AWS_S3_REGION:ap-east-1}
       bucketName: ${AWS_S3_BUCKET_NAME:ting-static}
+      readExpiryTimeInMinutes: ${AWS_S3_READ_EXPIRY_TIME_IN_MINUTES:30}
+      writeExpiryTimeInMinutes: ${AWS_S3_WRITE_EXPIRY_TIME_IN_MINUTES:5}
