@@ -20,7 +20,7 @@ import ting.entity.Program;
 import ting.entity.Ting;
 import ting.repository.ProgramRepository;
 import ting.repository.TingRepository;
-import ting.service.AzureBlobSas;
+import ting.service.AwsS3Service;
 import ting.service.AzureBlobStorageService;
 
 import javax.validation.Valid;
@@ -42,6 +42,9 @@ public class TingController extends BaseController {
 
     @Autowired
     private AzureBlobStorageService azureBlobStorageService;
+
+    @Autowired
+    private AwsS3Service awsS3Service;
 
     /**
      * Create a new ting.
@@ -166,9 +169,10 @@ public class TingController extends BaseController {
             return new ResponseEntity<>(new ResponseError("听力不存在"), HttpStatus.NOT_FOUND);
         }
 
-        AzureBlobSas azureBlobSas = azureBlobStorageService.generateSas(
-                AzureBlobStorageService.READ_PERMISSION);
-        String audioUrl = ting.getAudioUrl() + "?" + azureBlobSas.getSas();
+        int index = ting.getAudioUrl().lastIndexOf('/');
+        String fileName = ting.getAudioUrl().substring(index + 1);
+        String presignedUrl = awsS3Service.getPresignedUrl(
+                AwsS3Service.READ_PERMISSION, fileName);
 
         TingDto tingDto = new TingDto();
         tingDto.setId(ting.getId());
@@ -176,7 +180,7 @@ public class TingController extends BaseController {
         tingDto.setTitle(ting.getTitle());
         tingDto.setDescription(ting.getDescription());
         tingDto.setContent(ting.getContent());
-        tingDto.setAudioUrl(audioUrl);
+        tingDto.setAudioUrl(presignedUrl);
         tingDto.setCreatedAt(ting.getCreatedAt());
         tingDto.setUpdatedAt(ting.getUpdatedAt());
 
