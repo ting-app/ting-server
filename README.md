@@ -5,7 +5,7 @@
 ### Prerequisite
 1. Amazon S3
     1. Create a bucket
-    2. Edit `Cross-origin resource sharing (CORS)` setting under the `Permissions` tab to add an allowed origin (the host of [ting-app](https://github.com/Frederick-S/ting-app)):
+    2. Edit `Cross-origin resource sharing (CORS)` setting under the `Permissions` tab to add an allowed origin (the host of [ting-app](https://github.com/ting-app/ting-app)):
         ```
         [
             {
