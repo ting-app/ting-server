@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ting.dto.ResponseError;
@@ -46,6 +47,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseError> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException e) {
         return new ResponseEntity<>(new ResponseError("HTTP 消息转换异常"), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handle MissingServletRequestParameterException.
+     *
+     * @param e {@link org.springframework.web.bind.MissingServletRequestParameterException}
+     * @return The error entity {@link ting.dto.ResponseError}
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ResponseError> handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException e) {
+        String message = String.format("参数 %s 缺失", e.getParameterName());
+        ResponseError error = new ResponseError(message);
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     /**

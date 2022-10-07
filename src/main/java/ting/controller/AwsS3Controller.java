@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ting.dto.ResponseError;
 import ting.service.AwsS3Service;
@@ -30,7 +31,8 @@ public class AwsS3Controller extends BaseController {
      * @return The presigned url
      */
     @GetMapping("/s3/presignedUrl")
-    public ResponseEntity<?> getPresignedUrl(String permission, String fileName) {
+    public ResponseEntity<?> getPresignedUrl(
+            @RequestParam String permission, @RequestParam String fileName) {
         // Currently only supports read/write permission
         if (!Objects.equals(READ_PERMISSION, permission)
                 && !Objects.equals(CREATE_PERMISSION, permission)) {

@@ -78,7 +78,8 @@ public class ProgramController extends BaseController {
      */
     @GetMapping("/programs")
     public ResponseEntity<?> getPrograms(
-            @RequestParam(required = false) Integer language, int page, int pageSize,
+            @RequestParam(required = false) Integer language,
+            @RequestParam int page, @RequestParam int pageSize,
             @Me UserDto me) {
         if (language != null && language <= 0) {
             return new ResponseEntity<>(
