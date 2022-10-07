@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
+import ting.config.AwsS3Config;
 import ting.dto.ResponseError;
 import ting.dto.TingDto;
 import ting.dto.UserDto;
@@ -41,6 +42,9 @@ public class TingController extends BaseController {
 
     @Autowired
     private AwsS3Service awsS3Service;
+
+    @Autowired
+    private AwsS3Config awsS3Config;
 
     /**
      * Create a new ting.
@@ -165,20 +169,26 @@ public class TingController extends BaseController {
             return new ResponseEntity<>(new ResponseError("听力不存在"), HttpStatus.NOT_FOUND);
         }
 
-        int index = ting.getAudioUrl().lastIndexOf('/');
-        String fileName = ting.getAudioUrl().substring(index + 1);
-        String presignedUrl = awsS3Service.getPresignedUrl(
-                AwsS3Service.READ_PERMISSION, fileName);
-
         TingDto tingDto = new TingDto();
         tingDto.setId(ting.getId());
         tingDto.setProgramId(ting.getProgramId());
         tingDto.setTitle(ting.getTitle());
         tingDto.setDescription(ting.getDescription());
         tingDto.setContent(ting.getContent());
-        tingDto.setAudioUrl(presignedUrl);
         tingDto.setCreatedAt(ting.getCreatedAt());
         tingDto.setUpdatedAt(ting.getUpdatedAt());
+
+        if (ting.getAudioUrl().startsWith(
+                String.format("https://%s", awsS3Config.getBucketName()))) {
+            int index = ting.getAudioUrl().lastIndexOf('/');
+            String fileName = ting.getAudioUrl().substring(index + 1);
+            String presignedUrl = awsS3Service.getPresignedUrl(
+                    AwsS3Service.READ_PERMISSION, fileName);
+
+            tingDto.setAudioUrl(presignedUrl);
+        } else {
+            tingDto.setAudioUrl(ting.getAudioUrl());
+        }
 
         return new ResponseEntity<>(tingDto, HttpStatus.OK);
     }
