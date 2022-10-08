@@ -22,8 +22,6 @@ public class TingConfig {
 
     private String allowedOrigin;
 
-    private String nhkApiHost;
-
     public int getPasswordStrength() {
         return passwordStrength;
     }
@@ -54,13 +52,5 @@ public class TingConfig {
 
     public void setAllowedOrigin(String allowedOrigin) {
         this.allowedOrigin = allowedOrigin;
-    }
-
-    public String getNhkApiHost() {
-        return nhkApiHost;
-    }
-
-    public void setNhkApiHost(String nhkApiHost) {
-        this.nhkApiHost = nhkApiHost;
     }
 }
