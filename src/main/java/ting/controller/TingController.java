@@ -212,7 +212,7 @@ public class TingController extends BaseController {
             return new ResponseEntity<>(new ResponseError("节目无权访问"), HttpStatus.FORBIDDEN);
         }
 
-        List<Ting> tings = tingRepository.findByProgramId(programId);
+        List<Ting> tings = tingRepository.findByProgramIdOrderByUpdatedAtDesc(programId);
         List<TingDto> tingDtos = tings.stream()
                 .map(ting -> {
                     TingDto tingDto = new TingDto();

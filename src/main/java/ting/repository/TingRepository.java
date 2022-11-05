@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Repository
 public interface TingRepository extends JpaRepository<Ting, Long> {
-    List<Ting> findByProgramId(long programId);
+    List<Ting> findByProgramIdOrderByUpdatedAtDesc(long programId);
 
     void deleteByProgramId(long programId);
 
