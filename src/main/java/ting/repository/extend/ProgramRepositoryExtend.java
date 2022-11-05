@@ -5,6 +5,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ting.entity.Program;
@@ -19,6 +20,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,7 +61,7 @@ public class ProgramRepositoryExtend {
         }
 
         Example<Program> example = Example.of(program, exampleMatcher);
-        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("updatedAt").descending());
 
         return programRepository.findAll(example, pageable).getContent();
     }
@@ -95,7 +97,8 @@ public class ProgramRepositoryExtend {
         ));
 
         criteriaQuery.select(programRoot)
-                .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+                .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
+                .orderBy(Arrays.asList(criteriaBuilder.desc(programRoot.get("updatedAt"))));
 
         TypedQuery<Program> query = entityManager.createQuery(criteriaQuery);
         query.setFirstResult((page - 1) * pageSize);
