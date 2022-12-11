@@ -41,3 +41,8 @@ ting:
       bucketName: ${AWS_S3_BUCKET_NAME:ting-static}
       readExpiryTimeInMinutes: ${AWS_S3_READ_EXPIRY_TIME_IN_MINUTES:30}
       writeExpiryTimeInMinutes: ${AWS_S3_WRITE_EXPIRY_TIME_IN_MINUTES:5}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
