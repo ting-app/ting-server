@@ -104,10 +104,10 @@ public class ProgramController extends BaseController {
 
         if (me == null) {
             // Anonymous user, get all visible programs
-            programs = programRepositoryExtend.findAllVisible(language, page, pageSize);
+            programs = programRepositoryExtend.findVisible(language, page, pageSize);
         } else {
             // Otherwise, get all visible programs plus the invisible programs created by me
-            programs = programRepositoryExtend.findAllVisibleTo(
+            programs = programRepositoryExtend.findVisibleTo(
                     language, me.getId(), page, pageSize);
         }
 

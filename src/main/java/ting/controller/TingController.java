@@ -3,14 +3,8 @@ package ting.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ting.Constant;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
 import ting.config.AwsS3Config;
@@ -21,6 +15,7 @@ import ting.entity.Program;
 import ting.entity.Ting;
 import ting.repository.ProgramRepository;
 import ting.repository.TingRepository;
+import ting.repository.extend.TingRepositoryExtend;
 import ting.service.AwsS3Service;
 
 import javax.validation.Valid;
@@ -39,6 +34,9 @@ public class TingController extends BaseController {
 
     @Autowired
     private ProgramRepository programRepository;
+
+    @Autowired
+    private TingRepositoryExtend tingRepositoryExtend;
 
     @Autowired
     private AwsS3Service awsS3Service;
@@ -200,7 +198,23 @@ public class TingController extends BaseController {
      * @return List of {@link ting.dto.TingDto}
      */
     @GetMapping("/tings")
-    public ResponseEntity<?> getTings(@RequestParam long programId, @Me UserDto me) {
+    public ResponseEntity<?> getTings(
+            @RequestParam long programId, @RequestParam int page, @RequestParam int pageSize,
+            @Me UserDto me) {
+        if (page <= 0) {
+            return new ResponseEntity<>(new ResponseError("page 参数无效"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (pageSize <= 0) {
+            return new ResponseEntity<>(
+                    new ResponseError("pageSize 参数无效"), HttpStatus.BAD_REQUEST);
+        } else if (pageSize > Constant.MAX_PAGE_SIZE) {
+            return new ResponseEntity<>(
+                    new ResponseError(
+                            String.format("pageSize 超过最大值 %d", Constant.MAX_PAGE_SIZE)),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         Program program = programRepository.findById(programId).orElse(null);
 
         if (program == null) {
@@ -212,7 +226,7 @@ public class TingController extends BaseController {
             return new ResponseEntity<>(new ResponseError("节目无权访问"), HttpStatus.FORBIDDEN);
         }
 
-        List<Ting> tings = tingRepository.findByProgramIdOrderByUpdatedAtDesc(programId);
+        List<Ting> tings = tingRepositoryExtend.findAll(programId, page, pageSize);
         List<TingDto> tingDtos = tings.stream()
                 .map(ting -> {
                     TingDto tingDto = new TingDto();

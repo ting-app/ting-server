@@ -45,7 +45,7 @@ public class ProgramRepositoryExtend {
      * @param pageSize Count of programs returned in each page
      * @return List of {@link ting.entity.Program}
      */
-    public List<Program> findAllVisible(
+    public List<Program> findVisible(
             Integer language, int page, int pageSize) {
         if (page <= 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page or pageSize");
@@ -75,7 +75,7 @@ public class ProgramRepositoryExtend {
      * @param pageSize  Count of programs returned in each page
      * @return List of {@link ting.entity.Program}
      */
-    public List<Program> findAllVisibleTo(
+    public List<Program> findVisibleTo(
             Integer language, long createdBy, int page, int pageSize) {
         if (page <= 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page or pageSize");
