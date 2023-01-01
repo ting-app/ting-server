@@ -16,4 +16,6 @@ public interface TingRepository extends JpaRepository<Ting, Long> {
     void deleteByProgramId(long programId);
 
     List<Ting> findByIdIn(List<Long> ids);
+
+    long countByProgramId(long programId);
 }

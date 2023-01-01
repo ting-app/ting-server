@@ -3,7 +3,14 @@ package ting.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ting.Constant;
 import ting.annotation.LoginRequired;
 import ting.annotation.Me;
@@ -244,5 +251,18 @@ public class TingController extends BaseController {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(tingDtos, HttpStatus.OK);
+    }
+
+    /**
+     * Get total count of tings by program id.
+     *
+     * @param programId The id of a program
+     * @return Total count of tings
+     */
+    @GetMapping("/tings:count")
+    public ResponseEntity<?> getTingsCount(@RequestParam long programId) {
+        long count = tingRepository.countByProgramId(programId);
+
+        return new ResponseEntity<>(count, HttpStatus.OK);
     }
 }
