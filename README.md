@@ -1,4 +1,4 @@
-# ting-server (WIP) [![Java CI with Maven](https://github.com/Frederick-S/ting-server/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Frederick-S/ting-server/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/Frederick-S/ting-server/branch/main/graph/badge.svg?token=2ZS54PB3DB)](https://codecov.io/gh/Frederick-S/ting-server)
+# ting-server [![Java CI with Maven](https://github.com/Frederick-S/ting-server/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Frederick-S/ting-server/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/Frederick-S/ting-server/branch/main/graph/badge.svg?token=2ZS54PB3DB)](https://codecov.io/gh/Frederick-S/ting-server)
 一个更自由的听力平台。
 
 ## Getting Started
@@ -27,6 +27,7 @@
     1. Add a verified identity
 3. AWS IAM User
     1. Create an IAM user that has the permission of `AmazonSESFullAccess` and `AmazonS3FullAccess`, then export `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` as environment variables
+4. Create a MySQL database called `ting`, then import table structures with [init.sql](db/init.sql)
 
 ## License
 [MIT](LICENSE)
