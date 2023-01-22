@@ -47,7 +47,7 @@ CREATE TABLE `ting` (
   `audio_url` varchar(255) DEFAULT NULL,
   `content` text,
   `created_at` datetime(6) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
+  `description` varchar(500) DEFAULT NULL,
   `program_id` bigint DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `updated_at` datetime(6) DEFAULT NULL,
