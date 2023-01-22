@@ -1,4 +1,4 @@
-# ting-server [![Java CI with Maven](https://github.com/Frederick-S/ting-server/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Frederick-S/ting-server/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/Frederick-S/ting-server/branch/main/graph/badge.svg?token=2ZS54PB3DB)](https://codecov.io/gh/Frederick-S/ting-server)
+# ting-server [![Java CI with Maven](https://github.com/Frederick-S/ting-server/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Frederick-S/ting-server/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/ting-app/ting-server/branch/main/graph/badge.svg?token=2ZS54PB3DB)](https://codecov.io/gh/ting-app/ting-server)
 Server side code of [Ting](https://ting.dekiru.app).
 
 ## Getting Started
