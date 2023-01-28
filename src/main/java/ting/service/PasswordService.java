@@ -1,13 +1,20 @@
 package ting.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import ting.config.TingConfig;
+
+import java.security.SecureRandom;
 
 /**
  * The service that manages user's password.
  */
 @Service
 public class PasswordService {
+    @Autowired
+    private TingConfig tingConfig;
+
     /**
      * Check if the raw password matches the encrypted password.
      *
@@ -19,5 +26,18 @@ public class PasswordService {
         BCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder();
 
         return cryptPasswordEncoder.matches(rawPassword, encryptedPassword);
+    }
+
+    /**
+     * Encrypt password.
+     *
+     * @param password The password to encrypt
+     * @return Encrypted password
+     */
+    public String encrypt(String password) {
+        BCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder(
+                tingConfig.getPasswordStrength(), new SecureRandom());
+
+        return cryptPasswordEncoder.encode(password);
     }
 }

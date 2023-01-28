@@ -80,9 +80,7 @@ public class UserController extends BaseController {
             return new ResponseEntity<>(new ResponseError("用户名或邮箱地址已存在"), HttpStatus.BAD_REQUEST);
         }
 
-        BCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder(
-                tingConfig.getPasswordStrength(), new SecureRandom());
-        String encryptedPassword = cryptPasswordEncoder.encode(userRegisterRequest.getPassword());
+        String encryptedPassword = passwordService.encrypt(userRegisterRequest.getPassword());
 
         User newUser = new User();
         newUser.setName(userRegisterRequest.getName());
