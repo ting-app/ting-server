@@ -32,7 +32,7 @@ public abstract class BaseTest {
     @Autowired
     protected MockMvc mockMvc;
 
-    private User user;
+    protected User user;
 
     private String password = "123";
 
