@@ -1,4 +1,4 @@
-package ting;
+package ting.config;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcBuilderCustomizer;
 import org.springframework.stereotype.Component;

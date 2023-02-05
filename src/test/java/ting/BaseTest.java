@@ -11,7 +11,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.dto.UserLoginRequest;
+import ting.entity.Program;
 import ting.entity.User;
+import ting.repository.ProgramRepository;
 import ting.repository.UserRepository;
 import ting.service.PasswordService;
 
@@ -31,6 +33,9 @@ public abstract class BaseTest {
 
     @Autowired
     protected MockMvc mockMvc;
+
+    @Autowired
+    private ProgramRepository programRepository;
 
     protected User user;
 
@@ -62,5 +67,20 @@ public abstract class BaseTest {
                 .getCookies();
 
         return cookies;
+    }
+
+    protected Program createProgram(int language, boolean visible) {
+        Program program = new Program();
+        program.setLanguage(language);
+        program.setTitle(UUID.randomUUID().toString());
+        program.setVisible(visible);
+        program.setDescription("Description");
+        program.setCreatedBy(user.getId());
+        program.setCreatedAt(Instant.now());
+        program.setUpdatedAt(Instant.now());
+
+        programRepository.save(program);
+
+        return program;
     }
 }

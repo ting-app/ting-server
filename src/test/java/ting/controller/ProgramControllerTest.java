@@ -6,24 +6,17 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.BaseTest;
 import ting.dto.ProgramDto;
 import ting.entity.Program;
-import ting.repository.ProgramRepository;
 
 import javax.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 public class ProgramControllerTest extends BaseTest {
-    @Autowired
-    private ProgramRepository programRepository;
-
     @Test
     public void shouldReturn401WhenGetMyPrograms() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/users/me/programs"))
@@ -32,16 +25,7 @@ public class ProgramControllerTest extends BaseTest {
 
     @Test
     public void shouldGetMyPrograms() throws Exception {
-        Program program = new Program();
-        program.setLanguage(1);
-        program.setTitle(UUID.randomUUID().toString());
-        program.setVisible(true);
-        program.setDescription("Description");
-        program.setCreatedBy(user.getId());
-        program.setCreatedAt(Instant.now());
-        program.setUpdatedAt(Instant.now());
-
-        programRepository.save(program);
+        createProgram(1, true);
 
         Cookie[] cookies = login();
         String body = mockMvc.perform(MockMvcRequestBuilders.get("/users/me/programs").cookie(cookies))
@@ -78,5 +62,62 @@ public class ProgramControllerTest extends BaseTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=10000&language=1"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("pageSize 超过最大值")));
+    }
+
+    @Test
+    public void shouldGetProgramsForAnonymousUser() throws Exception {
+        createProgram(1, false);
+        createProgram(1, true);
+        createProgram(2, true);
+
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=10&language=1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        List<ProgramDto> programDtos = objectMapper.readValue(body, new TypeReference<>() {
+        });
+
+        Assertions.assertTrue(programDtos.size() > 0);
+
+        for (ProgramDto programDto : programDtos) {
+            Assertions.assertTrue(programDto.getVisible());
+            Assertions.assertEquals(1, programDto.getLanguage());
+        }
+    }
+
+    @Test
+    public void shouldGetProgramsForLoginUser() throws Exception {
+        Program program = createProgram(1, false);
+        createProgram(1, true);
+        createProgram(2, true);
+
+        Cookie[] cookies = login();
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=10&language=1").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        List<ProgramDto> programDtos = objectMapper.readValue(body, new TypeReference<>() {
+        });
+
+        Assertions.assertTrue(programDtos.size() > 0);
+
+        for (ProgramDto programDto : programDtos) {
+            Assertions.assertEquals(1, programDto.getLanguage());
+        }
+
+        ProgramDto programDto = programDtos.stream()
+                .filter(it -> it.getCreatedBy().equals(user.getId()))
+                .filter(it -> !it.getVisible())
+                .findFirst()
+                .orElse(null);
+
+        Assertions.assertNotNull(programDto);
+        Assertions.assertEquals(program.getId(), programDto.getId());
     }
 }
