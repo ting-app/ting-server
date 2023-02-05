@@ -1,11 +1,10 @@
 package ting.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.BaseTest;
@@ -33,8 +32,6 @@ public class ProgramControllerTest extends BaseTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
         List<ProgramDto> programDtos = objectMapper.readValue(body, new TypeReference<>() {
         });
 
@@ -75,8 +72,6 @@ public class ProgramControllerTest extends BaseTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
         List<ProgramDto> programDtos = objectMapper.readValue(body, new TypeReference<>() {
         });
 
@@ -100,8 +95,6 @@ public class ProgramControllerTest extends BaseTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
         List<ProgramDto> programDtos = objectMapper.readValue(body, new TypeReference<>() {
         });
 
@@ -119,5 +112,30 @@ public class ProgramControllerTest extends BaseTest {
 
         Assertions.assertNotNull(programDto);
         Assertions.assertEquals(program.getId(), programDto.getId());
+    }
+
+    @Test
+    public void shouldReturn401WhenCreateProgram() throws Exception {
+        ProgramDto programDto = createProgramDto(1, true);
+        String json = objectMapper.writeValueAsString(programDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/programs").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void shouldCreateProgram() throws Exception {
+        ProgramDto programDto = createProgramDto(1, true);
+        String json = objectMapper.writeValueAsString(programDto);
+
+        Cookie[] cookies = login();
+        String body = mockMvc.perform(MockMvcRequestBuilders.post("/programs").contentType(MediaType.APPLICATION_JSON).content(json).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        ProgramDto newProgramDto = objectMapper.readValue(body, ProgramDto.class);
+
+        Assertions.assertEquals(user.getId(), newProgramDto.getCreatedBy());
     }
 }

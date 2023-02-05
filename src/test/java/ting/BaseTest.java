@@ -1,6 +1,8 @@
 package ting;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import ting.dto.ProgramDto;
 import ting.dto.UserLoginRequest;
 import ting.entity.Program;
 import ting.entity.User;
@@ -41,8 +44,16 @@ public abstract class BaseTest {
 
     private String password = "123";
 
+    protected static ObjectMapper objectMapper;
+
+    @BeforeAll
+    public static void beforeAll() {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+    }
+
     @BeforeEach
-    public void setup() {
+    public void beforeEach() {
         user = new User();
         user.setName(UUID.randomUUID().toString());
         user.setEmail("example@example.com");
@@ -82,5 +93,15 @@ public abstract class BaseTest {
         programRepository.save(program);
 
         return program;
+    }
+
+    protected ProgramDto createProgramDto(int language, boolean visible) {
+        ProgramDto programDto = new ProgramDto();
+        programDto.setLanguage(language);
+        programDto.setTitle(UUID.randomUUID().toString());
+        programDto.setVisible(visible);
+        programDto.setDescription("Description");
+
+        return programDto;
     }
 }
