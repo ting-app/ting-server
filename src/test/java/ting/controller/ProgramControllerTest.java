@@ -24,7 +24,7 @@ public class ProgramControllerTest extends BaseTest {
 
     @Test
     public void shouldGetMyPrograms() throws Exception {
-        createProgram(1, true);
+        createMyProgram(1, true);
 
         Cookie[] cookies = login();
         String body = mockMvc.perform(MockMvcRequestBuilders.get("/users/me/programs").cookie(cookies))
@@ -63,9 +63,9 @@ public class ProgramControllerTest extends BaseTest {
 
     @Test
     public void shouldGetProgramsForAnonymousUser() throws Exception {
-        createProgram(1, false);
-        createProgram(1, true);
-        createProgram(2, true);
+        createMyProgram(1, false);
+        createMyProgram(1, true);
+        createMyProgram(2, true);
 
         String body = mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=10&language=1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -85,9 +85,9 @@ public class ProgramControllerTest extends BaseTest {
 
     @Test
     public void shouldGetProgramsForLoginUser() throws Exception {
-        Program program = createProgram(1, false);
-        createProgram(1, true);
-        createProgram(2, true);
+        Program program = createMyProgram(1, false);
+        createMyProgram(1, true);
+        createMyProgram(2, true);
 
         Cookie[] cookies = login();
         String body = mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=10&language=1").cookie(cookies))
@@ -137,5 +137,36 @@ public class ProgramControllerTest extends BaseTest {
         ProgramDto newProgramDto = objectMapper.readValue(body, ProgramDto.class);
 
         Assertions.assertEquals(currentUser.getId(), newProgramDto.getCreatedBy());
+    }
+
+    @Test
+    public void shouldReturn404WhenProgramNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/programs/999"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturnForbiddenWhenGetInvisibleProgram() throws Exception {
+        Program program = createOtherUserProgram(1, false);
+
+        Cookie[] cookies = login();
+        mockMvc.perform(MockMvcRequestBuilders.get("/programs/" + program.getId()).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+        mockMvc.perform(MockMvcRequestBuilders.get("/programs/" + program.getId()))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void shouldGetProgramById() throws Exception {
+        Program program = createMyProgram(1, true);
+
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/programs/" + program.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        ProgramDto programDto = objectMapper.readValue(body, ProgramDto.class);
+
+        Assertions.assertEquals(programDto.getId(), program.getId());
     }
 }

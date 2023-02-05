@@ -90,13 +90,28 @@ public abstract class BaseTest {
         return cookies;
     }
 
-    protected Program createProgram(int language, boolean visible) {
+    protected Program createMyProgram(int language, boolean visible) {
         Program program = new Program();
         program.setLanguage(language);
         program.setTitle(UUID.randomUUID().toString());
         program.setVisible(visible);
         program.setDescription("Description");
         program.setCreatedBy(currentUser.getId());
+        program.setCreatedAt(Instant.now());
+        program.setUpdatedAt(Instant.now());
+
+        programRepository.save(program);
+
+        return program;
+    }
+
+    protected Program createOtherUserProgram(int language, boolean visible) {
+        Program program = new Program();
+        program.setLanguage(language);
+        program.setTitle(UUID.randomUUID().toString());
+        program.setVisible(visible);
+        program.setDescription("Description");
+        program.setCreatedBy(otherUser.getId());
         program.setCreatedAt(Instant.now());
         program.setUpdatedAt(Instant.now());
 
