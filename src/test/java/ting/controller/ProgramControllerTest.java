@@ -39,7 +39,7 @@ public class ProgramControllerTest extends BaseTest {
 
         // Programs returned should be created by current user
         for (ProgramDto programDto : programDtos) {
-            Assertions.assertEquals(programDto.getCreatedBy(), user.getId());
+            Assertions.assertEquals(programDto.getCreatedBy(), currentUser.getId());
         }
     }
 
@@ -105,7 +105,7 @@ public class ProgramControllerTest extends BaseTest {
         }
 
         ProgramDto programDto = programDtos.stream()
-                .filter(it -> it.getCreatedBy().equals(user.getId()))
+                .filter(it -> it.getCreatedBy().equals(currentUser.getId()))
                 .filter(it -> !it.getVisible())
                 .findFirst()
                 .orElse(null);
@@ -136,6 +136,6 @@ public class ProgramControllerTest extends BaseTest {
                 .getContentAsString();
         ProgramDto newProgramDto = objectMapper.readValue(body, ProgramDto.class);
 
-        Assertions.assertEquals(user.getId(), newProgramDto.getCreatedBy());
+        Assertions.assertEquals(currentUser.getId(), newProgramDto.getCreatedBy());
     }
 }

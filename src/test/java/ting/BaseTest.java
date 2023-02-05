@@ -40,7 +40,9 @@ public abstract class BaseTest {
     @Autowired
     private ProgramRepository programRepository;
 
-    protected User user;
+    protected User currentUser;
+
+    protected User otherUser;
 
     private String password = "123";
 
@@ -54,19 +56,27 @@ public abstract class BaseTest {
 
     @BeforeEach
     public void beforeEach() {
-        user = new User();
-        user.setName(UUID.randomUUID().toString());
-        user.setEmail("example@example.com");
-        user.setEncryptedPassword(passwordService.encrypt(password));
-        user.setVerified(true);
-        user.setCreatedAt(Instant.now());
+        currentUser = new User();
+        currentUser.setName(UUID.randomUUID().toString());
+        currentUser.setEmail("example@example.com");
+        currentUser.setEncryptedPassword(passwordService.encrypt(password));
+        currentUser.setVerified(true);
+        currentUser.setCreatedAt(Instant.now());
 
-        userRepository.save(user);
+        otherUser = new User();
+        otherUser.setName(UUID.randomUUID().toString());
+        otherUser.setEmail("example@example.com");
+        otherUser.setEncryptedPassword(passwordService.encrypt(password));
+        otherUser.setVerified(true);
+        otherUser.setCreatedAt(Instant.now());
+
+        userRepository.save(currentUser);
+        userRepository.save(otherUser);
     }
 
     protected Cookie[] login() throws Exception {
         UserLoginRequest userLoginRequest = new UserLoginRequest();
-        userLoginRequest.setNameOrEmail(user.getName());
+        userLoginRequest.setNameOrEmail(currentUser.getName());
         userLoginRequest.setPassword(password);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -86,7 +96,7 @@ public abstract class BaseTest {
         program.setTitle(UUID.randomUUID().toString());
         program.setVisible(visible);
         program.setDescription("Description");
-        program.setCreatedBy(user.getId());
+        program.setCreatedBy(currentUser.getId());
         program.setCreatedAt(Instant.now());
         program.setUpdatedAt(Instant.now());
 
