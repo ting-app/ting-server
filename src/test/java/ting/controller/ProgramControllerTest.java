@@ -18,6 +18,7 @@ import javax.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 public class ProgramControllerTest extends BaseTest {
     @Autowired
@@ -33,7 +34,7 @@ public class ProgramControllerTest extends BaseTest {
     public void shouldGetMyPrograms() throws Exception {
         Program program = new Program();
         program.setLanguage(1);
-        program.setTitle("Test");
+        program.setTitle(UUID.randomUUID().toString());
         program.setVisible(true);
         program.setDescription("Description");
         program.setCreatedBy(user.getId());
@@ -54,6 +55,11 @@ public class ProgramControllerTest extends BaseTest {
         });
 
         Assertions.assertTrue(programDtos.size() > 0);
+
+        // Programs returned should be created by current user
+        for (ProgramDto programDto : programDtos) {
+            Assertions.assertEquals(programDto.getCreatedBy(), user.getId());
+        }
     }
 
     @Test

@@ -57,6 +57,7 @@ public class ProgramController extends BaseController {
                     programDto.setDescription(program.getDescription());
                     programDto.setLanguage(program.getLanguage());
                     programDto.setVisible(program.getVisible());
+                    programDto.setCreatedBy(program.getCreatedBy());
                     programDto.setCreatedAt(program.getCreatedAt());
                     programDto.setUpdatedAt(program.getUpdatedAt());
 
@@ -119,6 +120,7 @@ public class ProgramController extends BaseController {
                     programDto.setDescription(program.getDescription());
                     programDto.setLanguage(program.getLanguage());
                     programDto.setVisible(program.getVisible());
+                    programDto.setCreatedBy(program.getCreatedBy());
                     programDto.setCreatedAt(program.getCreatedAt());
                     programDto.setUpdatedAt(program.getUpdatedAt());
 
