@@ -4,18 +4,23 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.BaseTest;
 import ting.dto.ProgramDto;
 import ting.entity.Program;
+import ting.repository.ProgramRepository;
 
 import javax.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ProgramControllerTest extends BaseTest {
+    @Autowired
+    private ProgramRepository programRepository;
+
     @Test
     public void shouldReturn401WhenGetMyPrograms() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/users/me/programs"))
@@ -168,5 +173,39 @@ public class ProgramControllerTest extends BaseTest {
         ProgramDto programDto = objectMapper.readValue(body, ProgramDto.class);
 
         Assertions.assertEquals(programDto.getId(), program.getId());
+    }
+
+    @Test
+    public void shouldReturn401WhenDeleteProgram() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/programs/999"))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void shouldReturn404WhenDeleteProgram() throws Exception {
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/programs/999").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturn401WhenDeleteOtherUsersProgram() throws Exception {
+        Program program = createOtherUserProgram(1, true);
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/programs/" + program.getId()).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void shouldDeleteProgram() throws Exception {
+        Program program = createMyProgram(1, true);
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/programs/" + program.getId()).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Assertions.assertNull(programRepository.findById(program.getId()).orElse(null));
     }
 }
