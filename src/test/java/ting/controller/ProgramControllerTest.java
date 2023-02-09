@@ -253,4 +253,58 @@ public class ProgramControllerTest extends BaseTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/programs/999").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(programDto)).cookie(cookies))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    public void shouldReturn400WhenUpdateProgram() throws Exception {
+        Program program = createMyProgram(1, true);
+        ProgramDto programDto1 = new ProgramDto();
+        ProgramDto programDto2 = new ProgramDto();
+        programDto2.setTitle("title");
+        ProgramDto programDto3 = new ProgramDto();
+        programDto3.setTitle("title");
+        programDto3.setDescription("description");
+        ProgramDto programDto4 = new ProgramDto();
+        programDto4.setTitle("title");
+        programDto4.setDescription("description");
+        programDto4.setLanguage(1);
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/programs/" + program.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(programDto1)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.put("/programs/" + program.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(programDto2)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.put("/programs/" + program.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(programDto3)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.put("/programs/" + program.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(programDto4)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturn403WhenUpdateProgram() throws Exception {
+        Program program = createOtherUserProgram(1, true);
+        ProgramDto programDto = createProgramDto(1, true);
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/programs/" + program.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(programDto)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void shouldUpdateProgram() throws Exception {
+        Program program = createMyProgram(1, true);
+        ProgramDto programDto = createProgramDto(1, true);
+        programDto.setDescription("new description");
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/programs/" + program.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(programDto)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Program newProgram = programRepository.findById(program.getId()).orElse(null);
+
+        Assertions.assertNotNull(newProgram);
+        Assertions.assertEquals(programDto.getDescription(), newProgram.getDescription());
+    }
 }
