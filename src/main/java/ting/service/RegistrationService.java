@@ -13,7 +13,7 @@ import java.util.UUID;
  * The service that manages user registration.
  */
 @Service
-public class RegisterService {
+public class RegistrationService {
     @Autowired
     private TingConfig tingConfig;
 

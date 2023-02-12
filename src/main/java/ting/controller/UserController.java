@@ -22,7 +22,7 @@ import ting.dto.VerifyEmailRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
 import ting.service.PasswordService;
-import ting.service.RegisterService;
+import ting.service.RegistrationService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -47,7 +47,7 @@ public class UserController extends BaseController {
     private TingConfig tingConfig;
 
     @Autowired
-    private RegisterService registerService;
+    private RegistrationService registrationService;
 
     @Resource
     private RedisTemplate<String, Long> redisTemplate;
@@ -91,7 +91,7 @@ public class UserController extends BaseController {
 
         // TODO: in the rare case, two users may register with the same name at the same time
         userRepository.save(newUser);
-        registerService.sendRegistrationConfirmEmail(newUser);
+        registrationService.sendRegistrationConfirmEmail(newUser);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -201,7 +201,7 @@ public class UserController extends BaseController {
         }
 
         // TODO: if someone keeps sending the request, the redis memory will be exhausted
-        registerService.sendRegistrationConfirmEmail(user);
+        registrationService.sendRegistrationConfirmEmail(user);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
