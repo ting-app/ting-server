@@ -18,8 +18,10 @@ import ting.dto.TingPracticeDto;
 import ting.dto.UserLoginRequest;
 import ting.entity.Program;
 import ting.entity.Ting;
+import ting.entity.TingPractice;
 import ting.entity.User;
 import ting.repository.ProgramRepository;
+import ting.repository.TingPracticeRepository;
 import ting.repository.TingRepository;
 import ting.repository.UserRepository;
 import ting.service.PasswordService;
@@ -40,6 +42,9 @@ public abstract class BaseTest {
 
     @Autowired
     private TingRepository tingRepository;
+
+    @Autowired
+    private TingPracticeRepository tingPracticeRepository;
 
     @Autowired
     PasswordService passwordService;
@@ -172,5 +177,19 @@ public abstract class BaseTest {
         tingPracticeDto.setTimeCostInSeconds(10L);
 
         return tingPracticeDto;
+    }
+
+    protected TingPractice createMyTingPractice(long tingId) {
+        TingPractice tingPractice = new TingPractice();
+        tingPractice.setTingId(tingId);
+        tingPractice.setContent("content");
+        tingPractice.setScore(0.99f);
+        tingPractice.setTimeCostInSeconds(10L);
+        tingPractice.setCreatedBy(currentUser.getId());
+        tingPractice.setCreatedAt(Instant.now());
+
+        tingPracticeRepository.save(tingPractice);
+
+        return tingPractice;
     }
 }

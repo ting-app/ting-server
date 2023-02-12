@@ -1,5 +1,6 @@
 package ting.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import ting.entity.Program;
 import ting.entity.Ting;
 
 import javax.servlet.http.Cookie;
+import java.util.List;
 
 public class TingPracticeControllerTest extends BaseTest {
     @Test
@@ -74,5 +76,51 @@ public class TingPracticeControllerTest extends BaseTest {
 
         Assertions.assertNotNull(newTingPracticeDto);
         Assertions.assertEquals(ting.getId(), newTingPracticeDto.getTingId());
+    }
+
+    @Test
+    public void shouldReturn400WhenGetTingPracticesAndParametersAreInvalid() throws Exception {
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/tingPractices").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tingPractices?createdBy=1").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tingPractices?createdBy=1&page=1").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tingPractices?createdBy=1&pageSize=10").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tingPractices?createdBy=1&page=-1&pageSize=10").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tingPractices?createdBy=1&page=1&pageSize=-10").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tingPractices?createdBy=1&page=1&pageSize=999").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldGetTingPractices() throws Exception {
+        Program program = createMyProgram(1, true);
+        Ting ting = createTing(program.getId());
+        createMyTingPractice(ting.getId());
+        createMyTingPractice(ting.getId());
+        createMyTingPractice(ting.getId());
+
+        Cookie[] cookies = login();
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/tingPractices?createdBy=" + currentUser.getId() + "&page=1&pageSize=2").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<TingPracticeDto> tingPracticeDtos = objectMapper.readValue(body, new TypeReference<>() {
+        });
+
+        Assertions.assertNotNull(tingPracticeDtos);
+        Assertions.assertEquals(2, tingPracticeDtos.size());
+
+        for (TingPracticeDto tingPracticeDto : tingPracticeDtos) {
+            Assertions.assertEquals(currentUser.getId(), tingPracticeDto.getCreatedBy());
+            Assertions.assertNotNull(tingPracticeDto.getTingTitle());
+        }
     }
 }

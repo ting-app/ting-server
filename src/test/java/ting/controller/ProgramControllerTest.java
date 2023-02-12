@@ -52,6 +52,10 @@ public class ProgramControllerTest extends BaseTest {
     public void shouldReturn400WhenGetProgramsAndParametersAreInvalid() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/programs").characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&language=1"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/programs?pageSize=10&language=1"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=10&language=-1"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("language 参数无效")));

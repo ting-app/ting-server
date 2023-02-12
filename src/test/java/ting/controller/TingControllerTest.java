@@ -261,6 +261,10 @@ public class TingControllerTest extends BaseTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999&page=1"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999&pageSize=10"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999&page=-1&pageSize=10"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999&page=1&pageSize=-10"))
