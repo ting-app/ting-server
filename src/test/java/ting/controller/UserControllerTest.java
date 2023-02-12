@@ -2,6 +2,7 @@ package ting.controller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -12,12 +13,16 @@ import ting.dto.UserDto;
 import ting.dto.UserLoginRequest;
 import ting.dto.UserRegisterRequest;
 import ting.entity.User;
+import ting.repository.UserRepository;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import java.util.UUID;
 
 public class UserControllerTest extends BaseTest {
+    @Autowired
+    private UserRepository userRepository;
+
     @Resource
     private RedisTemplate<String, Long> redisTemplate;
 
@@ -173,5 +178,18 @@ public class UserControllerTest extends BaseTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users/confirmRegistration?key=" + key))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldConfirmRegistration() throws Exception {
+        User user = createUser(false, "password");
+        String key = UUID.randomUUID().toString();
+        redisTemplate.opsForValue().set("ting:register:" + key, user.getId());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/confirmRegistration?key=" + key))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Assertions.assertTrue(userRepository.findById(user.getId()).orElse(null).getVerified());
+        Assertions.assertNull(redisTemplate.opsForValue().get("ting:register:" + key));
     }
 }
