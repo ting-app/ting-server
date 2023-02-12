@@ -2,6 +2,7 @@ package ting.controller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -12,9 +13,14 @@ import ting.dto.UserLoginRequest;
 import ting.dto.UserRegisterRequest;
 import ting.entity.User;
 
+import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
+import java.util.UUID;
 
 public class UserControllerTest extends BaseTest {
+    @Resource
+    private RedisTemplate<String, Long> redisTemplate;
+
     @Test
     public void shouldReturn400WhenCreateUserAndPostBodyIsInvalid() throws Exception {
         UserRegisterRequest userRegisterRequest1 = new UserRegisterRequest();
@@ -141,5 +147,31 @@ public class UserControllerTest extends BaseTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userLoginRequest)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void shouldReturn400WhenConfirmRegistrationAndConfirmLinkNotFound() throws Exception {
+        String key = UUID.randomUUID().toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/confirmRegistration?key=" + key))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturn404WhenConfirmRegistrationAndUserNotFound() throws Exception {
+        String key = UUID.randomUUID().toString();
+        redisTemplate.opsForValue().set("ting:register:" + key, 999L);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/confirmRegistration?key=" + key))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturn400WhenConfirmRegistrationAndUserVerified() throws Exception {
+        String key = UUID.randomUUID().toString();
+        redisTemplate.opsForValue().set("ting:register:" + key, currentUser.getId());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/confirmRegistration?key=" + key))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }
