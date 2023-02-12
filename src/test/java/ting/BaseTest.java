@@ -13,10 +13,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.dto.ProgramDto;
+import ting.dto.TingDto;
 import ting.dto.UserLoginRequest;
 import ting.entity.Program;
+import ting.entity.Ting;
 import ting.entity.User;
 import ting.repository.ProgramRepository;
+import ting.repository.TingRepository;
 import ting.repository.UserRepository;
 import ting.service.PasswordService;
 
@@ -32,13 +35,16 @@ public abstract class BaseTest {
     private UserRepository userRepository;
 
     @Autowired
+    private ProgramRepository programRepository;
+
+    @Autowired
+    private TingRepository tingRepository;
+
+    @Autowired
     PasswordService passwordService;
 
     @Autowired
     protected MockMvc mockMvc;
-
-    @Autowired
-    private ProgramRepository programRepository;
 
     protected User currentUser;
 
@@ -128,5 +134,32 @@ public abstract class BaseTest {
         programDto.setDescription("Description");
 
         return programDto;
+    }
+
+    protected Ting createMyTing(long programId) {
+        Instant now = Instant.now();
+        Ting ting = new Ting();
+        ting.setProgramId(programId);
+        ting.setTitle("title");
+        ting.setDescription("description");
+        ting.setAudioUrl("audio");
+        ting.setContent("content");
+        ting.setCreatedAt(now);
+        ting.setUpdatedAt(now);
+
+        tingRepository.save(ting);
+
+        return ting;
+    }
+
+    protected TingDto createTingDto(long programId) {
+        TingDto tingDto = new TingDto();
+        tingDto.setProgramId(programId);
+        tingDto.setTitle("title");
+        tingDto.setDescription("description");
+        tingDto.setAudioUrl("audio");
+        tingDto.setContent("content");
+
+        return tingDto;
     }
 }

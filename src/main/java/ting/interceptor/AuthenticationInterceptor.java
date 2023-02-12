@@ -26,7 +26,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(
-            @NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler)
+            @NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
+            @NotNull Object handler)
             throws Exception {
         if (!(handler instanceof HandlerMethod)) {
             return true;
