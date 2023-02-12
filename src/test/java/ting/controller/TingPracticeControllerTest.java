@@ -123,4 +123,25 @@ public class TingPracticeControllerTest extends BaseTest {
             Assertions.assertNotNull(tingPracticeDto.getTingTitle());
         }
     }
+
+    @Test
+    public void shouldGetTingPracticesAndSetTingTitleToDeletedWhenTingDeleted() throws Exception {
+        createMyTingPractice(999);
+        createMyTingPractice(999);
+
+        Cookie[] cookies = login();
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/tingPractices?createdBy=" + currentUser.getId() + "&page=1&pageSize=2").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<TingPracticeDto> tingPracticeDtos = objectMapper.readValue(body, new TypeReference<>() {
+        });
+
+        Assertions.assertNotNull(tingPracticeDtos);
+
+        for (TingPracticeDto tingPracticeDto : tingPracticeDtos) {
+            Assertions.assertEquals("听力已删除", tingPracticeDto.getTingTitle());
+        }
+    }
 }
