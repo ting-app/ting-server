@@ -16,6 +16,7 @@ import ting.dto.ProgramDto;
 import ting.dto.TingDto;
 import ting.dto.TingPracticeDto;
 import ting.dto.UserLoginRequest;
+import ting.dto.UserRegisterRequest;
 import ting.entity.Program;
 import ting.entity.Ting;
 import ting.entity.TingPractice;
@@ -191,5 +192,28 @@ public abstract class BaseTest {
         tingPracticeRepository.save(tingPractice);
 
         return tingPractice;
+    }
+
+    protected User createUser(boolean verified) {
+        User user = new User();
+        user.setName(UUID.randomUUID().toString().substring(0, 20));
+        user.setEmail(Instant.now().toEpochMilli() + "@example.com");
+        user.setEncryptedPassword(passwordService.encrypt(password));
+        user.setVerified(verified);
+        user.setCreatedAt(Instant.now());
+
+        userRepository.save(user);
+
+        return user;
+    }
+
+    protected UserRegisterRequest createUserRegisterRequest() {
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
+        userRegisterRequest.setName(UUID.randomUUID().toString().substring(0, 20));
+        userRegisterRequest.setEmail(Instant.now().toEpochMilli() + "@example.com");
+        userRegisterRequest.setPassword("password");
+        userRegisterRequest.setConfirmPassword("password");
+
+        return userRegisterRequest;
     }
 }
