@@ -3,15 +3,19 @@ package ting.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.BaseTest;
+import ting.config.AwsS3Config;
 import ting.dto.TingDto;
 import ting.entity.Program;
 import ting.entity.Ting;
 import ting.repository.TingRepository;
+import ting.service.AwsS3Service;
 
 import javax.servlet.http.Cookie;
 import java.util.List;
@@ -19,6 +23,12 @@ import java.util.List;
 public class TingControllerTest extends BaseTest {
     @Autowired
     private TingRepository tingRepository;
+
+    @MockBean
+    private AwsS3Service awsS3Service;
+
+    @Autowired
+    private AwsS3Config awsS3Config;
 
     @Test
     public void shouldReturn401WhenCreateTingAndCurrentUserIsNotLoggedIn() throws Exception {
@@ -242,17 +252,30 @@ public class TingControllerTest extends BaseTest {
     @Test
     public void shouldGetTingById() throws Exception {
         Program program = createMyProgram(1, true);
-        Ting ting = createTing(program.getId());
+        Ting ting1 = createTing(program.getId());
+        Ting ting2 = createTing(program.getId());
+        ting2.setAudioUrl(String.format("https://%s/abc.mp3", awsS3Config.getBucketName()));
 
-        String body = mockMvc.perform(MockMvcRequestBuilders.get("/tings/" + ting.getId()))
+        tingRepository.save(ting2);
+
+        Mockito.when(awsS3Service.getPresignedUrl("r", "abc.mp3")).thenReturn("presigned.mp3");
+
+        String body1 = mockMvc.perform(MockMvcRequestBuilders.get("/tings/" + ting1.getId()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        TingDto tingDto = objectMapper.readValue(body, TingDto.class);
+        String body2 = mockMvc.perform(MockMvcRequestBuilders.get("/tings/" + ting2.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        TingDto tingDto1 = objectMapper.readValue(body1, TingDto.class);
+        TingDto tingDto2 = objectMapper.readValue(body2, TingDto.class);
 
-        Assertions.assertNotNull(tingDto);
-        Assertions.assertEquals(tingDto.getId(), ting.getId());
+        Assertions.assertNotNull(tingDto1);
+        Assertions.assertEquals(tingDto1.getId(), ting1.getId());
+        Assertions.assertEquals("presigned.mp3", tingDto2.getAudioUrl());
     }
 
     @Test
