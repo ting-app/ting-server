@@ -135,4 +135,67 @@ public class TingControllerTest extends BaseTest {
 
         Assertions.assertNull(tingRepository.findById(ting.getId()).orElse(null));
     }
+
+    @Test
+    public void shouldReturn401WhenUpdateTingAndCurrentUserIsNotLoggedIn() throws Exception {
+        TingDto tingDto = createTingDto(999);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/999").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto)))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void shouldReturn400WhenUpdateTingAndPostBodyIsInvalid() throws Exception {
+        Program program = createMyProgram(1, true);
+        TingDto tingDto1 = new TingDto();
+        TingDto tingDto2 = new TingDto();
+        tingDto2.setProgramId(program.getId());
+        TingDto tingDto3 = new TingDto();
+        tingDto3.setProgramId(program.getId());
+        tingDto3.setTitle("title");
+        TingDto tingDto4 = new TingDto();
+        tingDto4.setProgramId(program.getId());
+        tingDto4.setTitle("title");
+        tingDto4.setDescription("description");
+        TingDto tingDto5 = new TingDto();
+        tingDto5.setProgramId(program.getId());
+        tingDto5.setTitle("title");
+        tingDto5.setDescription("description");
+        tingDto5.setAudioUrl("audio");
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/999").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto1)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/999").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto2)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/999").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto3)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/999").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto4)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/999").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto5)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturn404WhenUpdateTingAndTingNotFound() throws Exception {
+        TingDto tingDto = createTingDto(999);
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/999").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturn403WhenUpdateTingAndProgramIsNotCreatedByCurrentUser() throws Exception {
+        Program program = createOtherUserProgram(1, true);
+        Ting ting = createTing(program.getId());
+        TingDto tingDto = createTingDto(program.getId());
+        tingDto.setId(ting.getId());
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/" + tingDto.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
 }
