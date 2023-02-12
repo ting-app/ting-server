@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.BaseTest;
+import ting.dto.ChangePasswordRequest;
 import ting.dto.UserDto;
 import ting.dto.UserRegisterRequest;
 import ting.entity.User;
@@ -77,5 +78,36 @@ public class UserControllerTest extends BaseTest {
 
         Assertions.assertNotNull(userDto);
         Assertions.assertEquals(currentUser.getId(), userDto.getId());
+    }
+
+    @Test
+    public void shouldReturn400WhenChangePasswordAndPostBodyIsInvalid() throws Exception {
+        ChangePasswordRequest changePasswordRequest1 = new ChangePasswordRequest();
+        ChangePasswordRequest changePasswordRequest2 = new ChangePasswordRequest();
+        changePasswordRequest2.setOldPassword("old");
+        ChangePasswordRequest changePasswordRequest3 = new ChangePasswordRequest();
+        changePasswordRequest3.setOldPassword("old");
+        changePasswordRequest3.setNewPassword("new");
+        ChangePasswordRequest changePasswordRequest4 = new ChangePasswordRequest();
+        changePasswordRequest4.setOldPassword("old");
+        changePasswordRequest4.setNewPassword("123456");
+        changePasswordRequest4.setConfirmNewPassword("123457");
+        ChangePasswordRequest changePasswordRequest5 = new ChangePasswordRequest();
+        changePasswordRequest5.setOldPassword("old");
+        changePasswordRequest5.setNewPassword("123456");
+        changePasswordRequest5.setConfirmNewPassword("123456");
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/me/changePassword").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest1)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/me/changePassword").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest2)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/me/changePassword").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest3)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/me/changePassword").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest4)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/me/changePassword").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest5)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }
