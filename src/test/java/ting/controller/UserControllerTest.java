@@ -12,6 +12,7 @@ import ting.dto.ChangePasswordRequest;
 import ting.dto.UserDto;
 import ting.dto.UserLoginRequest;
 import ting.dto.UserRegisterRequest;
+import ting.dto.VerifyEmailRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
 
@@ -191,5 +192,33 @@ public class UserControllerTest extends BaseTest {
 
         Assertions.assertTrue(userRepository.findById(user.getId()).orElse(null).getVerified());
         Assertions.assertNull(redisTemplate.opsForValue().get("ting:register:" + key));
+    }
+
+    @Test
+    public void shouldReturn400WhenVerifyEmailAndPostBodyIsInvalid() throws Exception {
+        User user = createUser(true, "password");
+        VerifyEmailRequest verifyEmailRequest1 = new VerifyEmailRequest();
+        VerifyEmailRequest verifyEmailRequest2 = new VerifyEmailRequest();
+        verifyEmailRequest2.setNameOrEmail("name");
+        VerifyEmailRequest verifyEmailRequest3 = new VerifyEmailRequest();
+        verifyEmailRequest3.setNameOrEmail(user.getName());
+        verifyEmailRequest3.setPassword("password");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest1)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest2)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest3)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturn404WhenVerifyEmailAndUserNotFound() throws Exception {
+        VerifyEmailRequest verifyEmailRequest = new VerifyEmailRequest();
+        verifyEmailRequest.setNameOrEmail(UUID.randomUUID().toString());
+        verifyEmailRequest.setPassword("password");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }
