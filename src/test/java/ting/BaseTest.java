@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.dto.ProgramDto;
 import ting.dto.TingDto;
+import ting.dto.TingPracticeDto;
 import ting.dto.UserLoginRequest;
 import ting.entity.Program;
 import ting.entity.Ting;
@@ -161,5 +162,15 @@ public abstract class BaseTest {
         tingDto.setContent("content");
 
         return tingDto;
+    }
+
+    protected TingPracticeDto createTingPracticeDto(long tingId) {
+        TingPracticeDto tingPracticeDto = new TingPracticeDto();
+        tingPracticeDto.setTingId(tingId);
+        tingPracticeDto.setContent("content");
+        tingPracticeDto.setScore(0.99f);
+        tingPracticeDto.setTimeCostInSeconds(10L);
+
+        return tingPracticeDto;
     }
 }

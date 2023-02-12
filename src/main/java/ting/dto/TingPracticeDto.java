@@ -18,7 +18,7 @@ public class TingPracticeDto {
 
     private String tingTitle;
 
-    @NotBlank
+    @NotBlank(message = "听力内容不能为空")
     private String content;
 
     @NotNull(message = "分数不能为空")
