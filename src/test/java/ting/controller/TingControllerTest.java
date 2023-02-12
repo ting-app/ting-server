@@ -198,4 +198,36 @@ public class TingControllerTest extends BaseTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/tings/" + tingDto.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto)).cookie(cookies))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
+
+    @Test
+    public void shouldReturn403WhenUpdateTingAndAssociatedProgramIsNotCorrect() throws Exception {
+        Program program1 = createMyProgram(1, true);
+        Program program2 = createMyProgram(1, true);
+        Ting ting = createTing(program1.getId());
+        TingDto tingDto = createTingDto(program2.getId());
+        tingDto.setId(ting.getId());
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/" + tingDto.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void shouldUpdateTing() throws Exception {
+        Program program = createMyProgram(1, true);
+        Ting ting = createTing(program.getId());
+        TingDto tingDto = createTingDto(program.getId());
+        tingDto.setId(ting.getId());
+        tingDto.setTitle("updated");
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/tings/" + tingDto.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tingDto)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Ting newTing = tingRepository.findById(ting.getId()).orElse(null);
+
+        Assertions.assertEquals(tingDto.getTitle(), newTing.getTitle());
+    }
 }
