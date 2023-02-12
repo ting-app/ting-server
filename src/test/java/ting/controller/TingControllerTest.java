@@ -309,4 +309,21 @@ public class TingControllerTest extends BaseTest {
             Assertions.assertEquals(program.getId(), tingDto.getProgramId());
         }
     }
+
+    @Test
+    public void shouldGetTingsCount() throws Exception {
+        Program program = createMyProgram(1, true);
+        createTing(program.getId());
+        createTing(program.getId());
+        createTing(program.getId());
+
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/tings:count?programId=" + program.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        int count = objectMapper.readValue(body, Integer.class);
+
+        Assertions.assertEquals(3, count);
+    }
 }
