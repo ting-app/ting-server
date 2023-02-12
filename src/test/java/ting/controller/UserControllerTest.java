@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.BaseTest;
 import ting.dto.ChangePasswordRequest;
 import ting.dto.UserDto;
+import ting.dto.UserLoginRequest;
 import ting.dto.UserRegisterRequest;
 import ting.entity.User;
 
@@ -53,7 +54,7 @@ public class UserControllerTest extends BaseTest {
 
     @Test
     public void shouldReturn400WhenCreateUserAndDuplicatedNameOrEmailFound() throws Exception {
-        User user = createUser(true);
+        User user = createUser(true, "password");
         UserRegisterRequest userRegisterRequest1 = createUserRegisterRequest();
         userRegisterRequest1.setName(user.getName());
         UserRegisterRequest userRegisterRequest2 = createUserRegisterRequest();
@@ -78,6 +79,17 @@ public class UserControllerTest extends BaseTest {
 
         Assertions.assertNotNull(userDto);
         Assertions.assertEquals(currentUser.getId(), userDto.getId());
+    }
+
+    @Test
+    public void shouldReturn401WhenChangePasswordAndCurrentUserIsNotLoggedIn() throws Exception {
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
+        changePasswordRequest.setOldPassword("old");
+        changePasswordRequest.setNewPassword("123456");
+        changePasswordRequest.setConfirmNewPassword("123456");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/me/changePassword").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
@@ -109,5 +121,25 @@ public class UserControllerTest extends BaseTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.post("/users/me/changePassword").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest5)).cookie(cookies))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldChangePassword() throws Exception {
+        User user = createUser(true, "password");
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
+        changePasswordRequest.setOldPassword("password");
+        changePasswordRequest.setNewPassword("password2");
+        changePasswordRequest.setConfirmNewPassword("password2");
+        Cookie[] cookies = login(user, "password");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/me/changePassword").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        UserLoginRequest userLoginRequest = new UserLoginRequest();
+        userLoginRequest.setNameOrEmail(user.getName());
+        userLoginRequest.setPassword("password2");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userLoginRequest)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

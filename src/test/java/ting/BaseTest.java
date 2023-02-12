@@ -103,6 +103,22 @@ public abstract class BaseTest {
         return cookies;
     }
 
+    protected Cookie[] login(User user, String password) throws Exception {
+        UserLoginRequest userLoginRequest = new UserLoginRequest();
+        userLoginRequest.setNameOrEmail(user.getName());
+        userLoginRequest.setPassword(password);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String data = objectMapper.writeValueAsString(userLoginRequest);
+        Cookie[] cookies = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login").contentType(MediaType.APPLICATION_JSON).content(data))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getCookies();
+
+        return cookies;
+    }
+
     protected Program createMyProgram(int language, boolean visible) {
         Program program = new Program();
         program.setLanguage(language);
@@ -194,7 +210,7 @@ public abstract class BaseTest {
         return tingPractice;
     }
 
-    protected User createUser(boolean verified) {
+    protected User createUser(boolean verified, String password) {
         User user = new User();
         user.setName(UUID.randomUUID().toString().substring(0, 20));
         user.setEmail(Instant.now().toEpochMilli() + "@example.com");
