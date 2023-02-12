@@ -1,5 +1,6 @@
 package ting.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import ting.entity.Ting;
 import ting.repository.TingRepository;
 
 import javax.servlet.http.Cookie;
+import java.util.List;
 
 public class TingControllerTest extends BaseTest {
     @Autowired
@@ -251,5 +253,60 @@ public class TingControllerTest extends BaseTest {
 
         Assertions.assertNotNull(tingDto);
         Assertions.assertEquals(tingDto.getId(), ting.getId());
+    }
+
+    @Test
+    public void shouldReturn400WhenGetTingsAndParametersAreInvalid() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999&page=-1&pageSize=10"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999&page=1&pageSize=-10"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999&page=1&pageSize=999"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturn404WhenGetTingsAndProgramNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=999&page=1&pageSize=10"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturn403WhenGetTingsAndProgramIsInvisibleAndNotCreatedByCurrentUser() throws Exception {
+        Program program = createOtherUserProgram(1, false);
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=" + program.getId() + "&page=1&pageSize=10"))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings?programId=" + program.getId() + "&page=1&pageSize=10").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void shouldGetTings() throws Exception {
+        Program program = createMyProgram(1, true);
+        createTing(program.getId());
+        createTing(program.getId());
+        createTing(program.getId());
+
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/tings?page=1&pageSize=2&programId=" + program.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<TingDto> tingDtos = objectMapper.readValue(body, new TypeReference<>() {
+        });
+
+        Assertions.assertTrue(tingDtos.size() > 0);
+        Assertions.assertEquals(2, tingDtos.size());
+
+        for (TingDto tingDto : tingDtos) {
+            Assertions.assertEquals(program.getId(), tingDto.getProgramId());
+        }
     }
 }

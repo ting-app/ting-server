@@ -70,9 +70,10 @@ public class ProgramControllerTest extends BaseTest {
     public void shouldGetProgramsForAnonymousUser() throws Exception {
         createMyProgram(1, false);
         createMyProgram(1, true);
+        createMyProgram(1, true);
         createMyProgram(2, true);
 
-        String body = mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=10&language=1"))
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=2&language=1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn()
                 .getResponse()
@@ -81,6 +82,7 @@ public class ProgramControllerTest extends BaseTest {
         });
 
         Assertions.assertTrue(programDtos.size() > 0);
+        Assertions.assertEquals(2, programDtos.size());
 
         for (ProgramDto programDto : programDtos) {
             Assertions.assertTrue(programDto.getVisible());
@@ -90,12 +92,13 @@ public class ProgramControllerTest extends BaseTest {
 
     @Test
     public void shouldGetProgramsForLoginUser() throws Exception {
-        Program program = createMyProgram(1, false);
+        createMyProgram(1, true);
         createMyProgram(1, true);
         createMyProgram(2, true);
+        Program program = createMyProgram(1, false);
 
         Cookie[] cookies = login();
-        String body = mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=10&language=1").cookie(cookies))
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=2&language=1").cookie(cookies))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn()
                 .getResponse()
@@ -104,6 +107,7 @@ public class ProgramControllerTest extends BaseTest {
         });
 
         Assertions.assertTrue(programDtos.size() > 0);
+        Assertions.assertEquals(2, programDtos.size());
 
         for (ProgramDto programDto : programDtos) {
             Assertions.assertEquals(1, programDto.getLanguage());
