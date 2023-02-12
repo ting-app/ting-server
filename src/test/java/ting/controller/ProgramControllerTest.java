@@ -22,7 +22,7 @@ public class ProgramControllerTest extends BaseTest {
     private ProgramRepository programRepository;
 
     @Test
-    public void shouldReturn401WhenGetMyPrograms() throws Exception {
+    public void shouldReturn401WhenGetMyProgramsAndUserIsNotLoggedIn() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/users/me/programs"))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
@@ -49,7 +49,7 @@ public class ProgramControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn400WhenGetPrograms() throws Exception {
+    public void shouldReturn400WhenGetProgramsAndParametersAreInvalid() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/programs").characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.get("/programs?page=1&pageSize=10&language=-1"))
@@ -120,7 +120,7 @@ public class ProgramControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn401WhenCreateProgram() throws Exception {
+    public void shouldReturn401WhenCreateProgramAndCurrentUserIsNotLoggedIn() throws Exception {
         ProgramDto programDto = createProgramDto(1, true);
         String json = objectMapper.writeValueAsString(programDto);
 
@@ -129,7 +129,7 @@ public class ProgramControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn400WhenCreateProgram() throws Exception {
+    public void shouldReturn400WhenCreateProgramAndPostBodyIsInvalid() throws Exception {
         ProgramDto programDto1 = new ProgramDto();
         ProgramDto programDto2 = new ProgramDto();
         programDto2.setTitle("title");
@@ -170,13 +170,13 @@ public class ProgramControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn404WhenProgramNotFound() throws Exception {
+    public void shouldReturn404WhenGetProgramByIdAndProgramNotFound() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/programs/999"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
-    public void shouldReturnForbiddenWhenGetInvisibleProgram() throws Exception {
+    public void shouldReturnForbiddenWhenGetProgramByIdAndProgramIsInvisible() throws Exception {
         Program program = createOtherUserProgram(1, false);
 
         Cookie[] cookies = login();
@@ -201,13 +201,13 @@ public class ProgramControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn401WhenDeleteProgram() throws Exception {
+    public void shouldReturn401WhenDeleteProgramAndCurrentUserIsNotLoggedIn() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/programs/999"))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
-    public void shouldReturn404WhenDeleteProgram() throws Exception {
+    public void shouldReturn404WhenDeleteProgramAndProgramNotFound() throws Exception {
         Cookie[] cookies = login();
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/programs/999").cookie(cookies))
@@ -215,7 +215,7 @@ public class ProgramControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn401WhenDeleteOtherUsersProgram() throws Exception {
+    public void shouldReturn403WhenDeleteOtherUsersProgram() throws Exception {
         Program program = createOtherUserProgram(1, true);
         Cookie[] cookies = login();
 
@@ -235,13 +235,13 @@ public class ProgramControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn401WhenUpdateProgram() throws Exception {
+    public void shouldReturn401WhenUpdateProgramAndCurrentUserIsNotLoggedIn() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.put("/programs/999"))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
-    public void shouldReturn404WhenUpdateProgram() throws Exception {
+    public void shouldReturn404WhenUpdateProgramAndProgramNotFound() throws Exception {
         ProgramDto programDto = new ProgramDto();
         programDto.setTitle("title");
         programDto.setDescription("description");
@@ -255,7 +255,7 @@ public class ProgramControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn400WhenUpdateProgram() throws Exception {
+    public void shouldReturn400WhenUpdateProgramAndPostBodyIsInvalid() throws Exception {
         Program program = createMyProgram(1, true);
         ProgramDto programDto1 = new ProgramDto();
         ProgramDto programDto2 = new ProgramDto();
@@ -281,7 +281,7 @@ public class ProgramControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn403WhenUpdateProgram() throws Exception {
+    public void shouldReturn403WhenUpdateProgramAndProgramNotCreatedByCurrentUser() throws Exception {
         Program program = createOtherUserProgram(1, true);
         ProgramDto programDto = createProgramDto(1, true);
 

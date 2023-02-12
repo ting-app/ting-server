@@ -13,7 +13,7 @@ import javax.servlet.http.Cookie;
 
 public class TingControllerTest extends BaseTest {
     @Test
-    public void shouldReturn401WhenCreateTing() throws Exception {
+    public void shouldReturn401WhenCreateTingAndCurrentUserIsNotLoggedIn() throws Exception {
         Program program = createMyProgram(1, true);
         TingDto tingDto = createTingDto(program.getId());
         String json = objectMapper.writeValueAsString(tingDto);
@@ -23,7 +23,7 @@ public class TingControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn400WhenProgramDoesntExist() throws Exception {
+    public void shouldReturn400WhenCreateTingAndProgramDoesntExist() throws Exception {
         TingDto tingDto = createTingDto(999);
         String json = objectMapper.writeValueAsString(tingDto);
         Cookie[] cookies = login();
@@ -33,7 +33,7 @@ public class TingControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn401WhenProgramDoesntBelongToCurrentUser() throws Exception {
+    public void shouldReturn403WhenCreateTingAndProgramDoesntBelongToCurrentUser() throws Exception {
         Program program = createOtherUserProgram(1, true);
         TingDto tingDto = createTingDto(program.getId());
         String json = objectMapper.writeValueAsString(tingDto);
@@ -44,7 +44,7 @@ public class TingControllerTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn400WhenCreateTing() throws Exception {
+    public void shouldReturn400WhenCreateTingAndPostBodyIsInvalid() throws Exception {
         Program program = createMyProgram(1, true);
         TingDto tingDto1 = new TingDto();
         TingDto tingDto2 = new TingDto();
@@ -88,7 +88,13 @@ public class TingControllerTest extends BaseTest {
                 .getResponse()
                 .getContentAsString();
         TingDto newTingDto = objectMapper.readValue(body, TingDto.class);
-        
+
         Assertions.assertEquals(program.getId(), newTingDto.getProgramId());
+    }
+
+    @Test
+    public void shouldReturn401WhenDeleteTingAndCurrentUserIsNotLoggedIn() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/tings/999"))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 }
