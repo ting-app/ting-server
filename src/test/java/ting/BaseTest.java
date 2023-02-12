@@ -136,7 +136,7 @@ public abstract class BaseTest {
         return programDto;
     }
 
-    protected Ting createMyTing(long programId) {
+    protected Ting createTing(long programId) {
         Instant now = Instant.now();
         Ting ting = new Ting();
         ting.setProgramId(programId);

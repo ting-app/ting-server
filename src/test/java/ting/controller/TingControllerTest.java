@@ -2,16 +2,22 @@ package ting.controller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.BaseTest;
 import ting.dto.TingDto;
 import ting.entity.Program;
+import ting.entity.Ting;
+import ting.repository.TingRepository;
 
 import javax.servlet.http.Cookie;
 
 public class TingControllerTest extends BaseTest {
+    @Autowired
+    private TingRepository tingRepository;
+
     @Test
     public void shouldReturn401WhenCreateTingAndCurrentUserIsNotLoggedIn() throws Exception {
         Program program = createMyProgram(1, true);
@@ -96,5 +102,37 @@ public class TingControllerTest extends BaseTest {
     public void shouldReturn401WhenDeleteTingAndCurrentUserIsNotLoggedIn() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/tings/999"))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void shouldReturn404WhenDeleteTingAndTingNotFound() throws Exception {
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/tings/999").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturn403WhenDeleteTingAndProgramIsNotCreatedByCurrentUser() throws Exception {
+        Program program = createOtherUserProgram(1, true);
+        Ting ting = createTing(program.getId());
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/tings/" + ting.getId()).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void shouldDeleteTing() throws Exception {
+        Program program = createMyProgram(1, true);
+        Ting ting = createTing(program.getId());
+
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/tings/" + ting.getId()).cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Assertions.assertNull(tingRepository.findById(ting.getId()).orElse(null));
     }
 }
