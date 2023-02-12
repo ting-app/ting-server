@@ -1,5 +1,6 @@
 package ting.support;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -28,8 +29,8 @@ public class CurrentUserHandlerMethodArgumentResolver implements HandlerMethodAr
 
     @Override
     public Object resolveArgument(
-            MethodParameter parameter, ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+            @NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpSession session = ((HttpServletRequest) webRequest.getNativeRequest()).getSession();
         UserDto user = (UserDto) session.getAttribute(Constant.ME);
 

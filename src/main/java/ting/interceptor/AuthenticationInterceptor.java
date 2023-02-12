@@ -1,6 +1,7 @@
 package ting.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(
-            HttpServletRequest request, HttpServletResponse response, Object handler)
+            @NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler)
             throws Exception {
         if (!(handler instanceof HandlerMethod)) {
             return true;
