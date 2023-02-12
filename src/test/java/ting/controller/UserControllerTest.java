@@ -1,12 +1,16 @@
 package ting.controller;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ting.BaseTest;
+import ting.dto.UserDto;
 import ting.dto.UserRegisterRequest;
 import ting.entity.User;
+
+import javax.servlet.http.Cookie;
 
 public class UserControllerTest extends BaseTest {
     @Test
@@ -58,5 +62,20 @@ public class UserControllerTest extends BaseTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userRegisterRequest2)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldGetCurrentUser() throws Exception {
+        Cookie[] cookies = login();
+
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/users/me").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        UserDto userDto = objectMapper.readValue(body, UserDto.class);
+
+        Assertions.assertNotNull(userDto);
+        Assertions.assertEquals(currentUser.getId(), userDto.getId());
     }
 }
