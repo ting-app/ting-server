@@ -230,4 +230,26 @@ public class TingControllerTest extends BaseTest {
 
         Assertions.assertEquals(tingDto.getTitle(), newTing.getTitle());
     }
+
+    @Test
+    public void shouldReturn404WhenGetTingByIdAndTingNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/tings/999"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void shouldGetTingById() throws Exception {
+        Program program = createMyProgram(1, true);
+        Ting ting = createTing(program.getId());
+
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/tings/" + ting.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        TingDto tingDto = objectMapper.readValue(body, TingDto.class);
+
+        Assertions.assertNotNull(tingDto);
+        Assertions.assertEquals(tingDto.getId(), ting.getId());
+    }
 }
