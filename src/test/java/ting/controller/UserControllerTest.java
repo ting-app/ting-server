@@ -17,7 +17,6 @@ import ting.dto.UserRegisterRequest;
 import ting.dto.VerifyEmailRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
-import ting.service.AwsSesService;
 import ting.service.RegistrationService;
 
 import javax.annotation.Resource;
@@ -30,9 +29,6 @@ public class UserControllerTest extends BaseTest {
 
     @Resource
     private RedisTemplate<String, Long> redisTemplate;
-
-    @MockBean
-    private AwsSesService awsSesService;
 
     @MockBean
     private RegistrationService registrationService;
@@ -216,19 +212,25 @@ public class UserControllerTest extends BaseTest {
 
     @Test
     public void shouldReturn400WhenVerifyEmailAndPostBodyIsInvalid() throws Exception {
-        User user = createUser(true, "password");
+        User user1 = createUser(true, "password");
+        User user2 = createUser(false, "password");
         VerifyEmailRequest verifyEmailRequest1 = new VerifyEmailRequest();
         VerifyEmailRequest verifyEmailRequest2 = new VerifyEmailRequest();
         verifyEmailRequest2.setNameOrEmail("name");
         VerifyEmailRequest verifyEmailRequest3 = new VerifyEmailRequest();
-        verifyEmailRequest3.setNameOrEmail(user.getName());
+        verifyEmailRequest3.setNameOrEmail(user1.getName());
         verifyEmailRequest3.setPassword("password");
+        VerifyEmailRequest verifyEmailRequest4 = new VerifyEmailRequest();
+        verifyEmailRequest4.setNameOrEmail(user2.getName());
+        verifyEmailRequest4.setPassword("password2");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest1)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest2)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest3)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest4)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
@@ -240,5 +242,18 @@ public class UserControllerTest extends BaseTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void shouldVerifyEmail() throws Exception {
+        User user = createUser(false, "password");
+        VerifyEmailRequest verifyEmailRequest = new VerifyEmailRequest();
+        verifyEmailRequest.setNameOrEmail(user.getName());
+        verifyEmailRequest.setPassword("password");
+
+        Mockito.doNothing().when(registrationService).sendRegistrationConfirmEmail(new User());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/verifyEmail").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(verifyEmailRequest)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
