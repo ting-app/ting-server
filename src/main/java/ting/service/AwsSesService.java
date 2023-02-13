@@ -47,6 +47,7 @@ public class AwsSesService {
                 .withDestination(destination)
                 .withMessage(message)
                 .withSource(awsSesConfig.getFromAddress());
+
         amazonSimpleEmailService.sendEmail(sendEmailRequest);
     }
 }
