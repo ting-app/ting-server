@@ -2,7 +2,9 @@ package ting.controller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -15,6 +17,8 @@ import ting.dto.UserRegisterRequest;
 import ting.dto.VerifyEmailRequest;
 import ting.entity.User;
 import ting.repository.UserRepository;
+import ting.service.AwsSesService;
+import ting.service.RegistrationService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
@@ -26,6 +30,12 @@ public class UserControllerTest extends BaseTest {
 
     @Resource
     private RedisTemplate<String, Long> redisTemplate;
+
+    @MockBean
+    private AwsSesService awsSesService;
+
+    @MockBean
+    private RegistrationService registrationService;
 
     @Test
     public void shouldReturn400WhenCreateUserAndPostBodyIsInvalid() throws Exception {
@@ -76,6 +86,16 @@ public class UserControllerTest extends BaseTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
         mockMvc.perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userRegisterRequest2)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldCreateUser() throws Exception {
+        UserRegisterRequest userRegisterRequest = createUserRegisterRequest();
+
+        Mockito.doNothing().when(registrationService).sendRegistrationConfirmEmail(new User());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userRegisterRequest)))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
