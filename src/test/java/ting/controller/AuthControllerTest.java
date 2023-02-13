@@ -1,6 +1,8 @@
 package ting.controller;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -8,6 +10,7 @@ import ting.BaseTest;
 import ting.dto.UserLoginRequest;
 import ting.entity.User;
 
+import javax.servlet.http.Cookie;
 import java.util.UUID;
 
 public class AuthControllerTest extends BaseTest {
@@ -53,5 +56,21 @@ public class AuthControllerTest extends BaseTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userLoginRequest)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void shouldSignOutUser() throws Exception {
+        Cookie[] cookies = login();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/signOut").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/users/me").cookie(cookies))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Assertions.assertTrue(StringUtils.isBlank(body));
     }
 }
