@@ -149,6 +149,21 @@ public abstract class BaseTest {
         return program;
     }
 
+    protected Program createProgram(int language, boolean visible, long createdBy) {
+        Program program = new Program();
+        program.setLanguage(language);
+        program.setTitle(UUID.randomUUID().toString());
+        program.setVisible(visible);
+        program.setDescription("Description");
+        program.setCreatedBy(createdBy);
+        program.setCreatedAt(Instant.now());
+        program.setUpdatedAt(Instant.now());
+
+        programRepository.save(program);
+
+        return program;
+    }
+
     protected ProgramDto createProgramDto(int language, boolean visible) {
         ProgramDto programDto = new ProgramDto();
         programDto.setLanguage(language);
