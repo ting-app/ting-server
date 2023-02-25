@@ -4,6 +4,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
+import java.util.List;
 
 /**
  * The data transfer object that represents a ting.
@@ -31,6 +32,8 @@ public class TingDto {
     private Instant createdAt;
 
     private Instant updatedAt;
+
+    private List<TagDto> tags;
 
     public Long getId() {
         return id;
@@ -94,5 +97,13 @@ public class TingDto {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<TagDto> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagDto> tags) {
+        this.tags = tags;
     }
 }

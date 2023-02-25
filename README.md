@@ -27,7 +27,7 @@ Server side code of [Ting](https://ting.dekiru.app).
     1. Add a verified identity
 3. AWS IAM User
     1. Create an IAM user that has the permission of `AmazonSESFullAccess` and `AmazonS3FullAccess`, then export `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` as environment variables
-4. Create a MySQL database called `ting`, then import table structures with [init.sql](db/init.sql)
+4. Create a MySQL database called `ting`, then import table structures with [schema.sql](db/schema.sql) and initialize initial data with [initial_data.sql](db/initial_data.sql)
 
 ### Run with Docker
 ```
