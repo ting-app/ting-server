@@ -18,12 +18,16 @@ import ting.dto.TingPracticeDto;
 import ting.dto.UserLoginRequest;
 import ting.dto.UserRegisterRequest;
 import ting.entity.Program;
+import ting.entity.Tag;
 import ting.entity.Ting;
 import ting.entity.TingPractice;
+import ting.entity.TingTag;
 import ting.entity.User;
 import ting.repository.ProgramRepository;
+import ting.repository.TagRepository;
 import ting.repository.TingPracticeRepository;
 import ting.repository.TingRepository;
+import ting.repository.TingTagRepository;
 import ting.repository.UserRepository;
 import ting.service.PasswordService;
 
@@ -46,6 +50,12 @@ public abstract class BaseTest {
 
     @Autowired
     private TingPracticeRepository tingPracticeRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private TingTagRepository tingTagRepository;
 
     @Autowired
     PasswordService passwordService;
@@ -188,6 +198,21 @@ public abstract class BaseTest {
         tingRepository.save(ting);
 
         return ting;
+    }
+
+    protected Tag createTag(Long tingId) {
+        Tag tag = new Tag();
+        tag.setName(UUID.randomUUID().toString().substring(0, 20));
+
+        tagRepository.save(tag);
+
+        TingTag tingTag = new TingTag();
+        tingTag.setTingId(tingId);
+        tingTag.setTagId(tag.getId());
+
+        tingTagRepository.save(tingTag);
+
+        return tag;
     }
 
     protected TingDto createTingDto(long programId) {

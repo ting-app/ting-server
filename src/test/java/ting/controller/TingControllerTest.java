@@ -13,6 +13,7 @@ import ting.BaseTest;
 import ting.config.AwsS3Config;
 import ting.dto.TingDto;
 import ting.entity.Program;
+import ting.entity.Tag;
 import ting.entity.Ting;
 import ting.repository.TingRepository;
 import ting.service.AwsS3Service;
@@ -279,6 +280,25 @@ public class TingControllerTest extends BaseTest {
     }
 
     @Test
+    public void shouldGetTingByIdWithTags() throws Exception {
+        Program program = createMyProgram(1, true);
+        Ting ting = createTing(program.getId());
+        Tag tag = createTag(ting.getId());
+
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/tings/" + ting.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        TingDto tingDto = objectMapper.readValue(body, TingDto.class);
+
+        Assertions.assertNotNull(tingDto);
+        Assertions.assertEquals(tingDto.getId(), ting.getId());
+        Assertions.assertEquals(1, tingDto.getTags().size());
+        Assertions.assertEquals(tag.getId(), tingDto.getTags().get(0).getId());
+    }
+
+    @Test
     public void shouldReturn400WhenGetTingsAndParametersAreInvalid() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/tings"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -334,6 +354,29 @@ public class TingControllerTest extends BaseTest {
 
         for (TingDto tingDto : tingDtos) {
             Assertions.assertEquals(program.getId(), tingDto.getProgramId());
+        }
+    }
+
+    @Test
+    public void shouldGetTingsWithTags() throws Exception {
+        Program program = createMyProgram(1, true);
+        Ting ting = createTing(program.getId());
+        Tag tag = createTag(ting.getId());
+
+        String body = mockMvc.perform(MockMvcRequestBuilders.get("/tings?page=1&pageSize=2&programId=" + program.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<TingDto> tingDtos = objectMapper.readValue(body, new TypeReference<>() {
+        });
+
+        Assertions.assertTrue(tingDtos.size() > 0);
+        Assertions.assertEquals(1, tingDtos.size());
+
+        for (TingDto tingDto : tingDtos) {
+            Assertions.assertEquals(1, tingDto.getTags().size());
+            Assertions.assertEquals(tag.getId(), tingDto.getTags().get(0).getId());
         }
     }
 
