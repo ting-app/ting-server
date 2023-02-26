@@ -26,7 +26,7 @@ spring:
 server:
   servlet:
     session:
-      timeout: 24h
+      timeout: 168h
 ting:
   passwordStrength: ${TING_PASSWORD_STRENGTH:10}
   confirmRegistrationExpiryDuration: ${TING_CONFIRM_REGISTRATION_EXPIRY_DURATION:24h}
