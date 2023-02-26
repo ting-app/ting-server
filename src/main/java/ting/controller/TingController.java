@@ -1,5 +1,6 @@
 package ting.controller;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +17,27 @@ import ting.annotation.LoginRequired;
 import ting.annotation.Me;
 import ting.config.AwsS3Config;
 import ting.dto.ResponseError;
+import ting.dto.TagDto;
 import ting.dto.TingDto;
 import ting.dto.UserDto;
+import ting.entity.BaseEntity;
 import ting.entity.Program;
+import ting.entity.Tag;
 import ting.entity.Ting;
+import ting.entity.TingTag;
 import ting.repository.ProgramRepository;
+import ting.repository.TagRepository;
 import ting.repository.TingRepository;
+import ting.repository.TingTagRepository;
 import ting.repository.extend.TingRepositoryExtend;
 import ting.service.AwsS3Service;
 
 import javax.validation.Valid;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -44,6 +54,12 @@ public class TingController extends BaseController {
 
     @Autowired
     private TingRepositoryExtend tingRepositoryExtend;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private TingTagRepository tingTagRepository;
 
     @Autowired
     private AwsS3Service awsS3Service;
@@ -195,6 +211,8 @@ public class TingController extends BaseController {
             tingDto.setAudioUrl(ting.getAudioUrl());
         }
 
+        setTags(Arrays.asList(tingDto));
+
         return new ResponseEntity<>(tingDto, HttpStatus.OK);
     }
 
@@ -250,6 +268,8 @@ public class TingController extends BaseController {
                 })
                 .collect(Collectors.toList());
 
+        setTags(tingDtos);
+
         return new ResponseEntity<>(tingDtos, HttpStatus.OK);
     }
 
@@ -264,5 +284,56 @@ public class TingController extends BaseController {
         long count = tingRepository.countByProgramId(programId);
 
         return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+
+    /**
+     * Set tags for ting.
+     *
+     * @param tingDtos List of {@link TingDto}
+     */
+    private void setTags(List<TingDto> tingDtos) {
+        if (CollectionUtils.isEmpty(tingDtos)) {
+            return;
+        }
+
+        List<Long> tingIds = tingDtos.stream()
+                .map(TingDto::getId)
+                .toList();
+        List<TingTag> tingTags = tingTagRepository.findByTingIdIn(tingIds);
+
+        if (CollectionUtils.isEmpty(tingTags)) {
+            return;
+        }
+
+        List<Long> tagIds = tingTags.stream()
+                .map(TingTag::getTagId)
+                .toList();
+        List<Tag> tags = tagRepository.findByIdIn(tagIds);
+
+        if (CollectionUtils.isEmpty(tags)) {
+            return;
+        }
+
+        Map<Long, Tag> tagMap = tags.stream()
+                .collect(Collectors.toMap(BaseEntity::getId, it -> it));
+        Map<Long, List<TingTag>> tingTagMap = tingTags.stream()
+                .collect(Collectors.groupingBy(TingTag::getTingId));
+
+        tingDtos.forEach(tingDto -> {
+            List<TagDto> tagDtos = tingTagMap.getOrDefault(tingDto.getId(), new ArrayList<>())
+                    .stream()
+                    .map(TingTag::getTagId)
+                    .map(tagMap::get)
+                    .map(tag -> {
+                        TagDto tagDto = new TagDto();
+                        tagDto.setId(tag.getId());
+                        tagDto.setName(tag.getName());
+
+                        return tagDto;
+                    })
+                    .toList();
+
+            tingDto.setTags(tagDtos);
+        });
     }
 }

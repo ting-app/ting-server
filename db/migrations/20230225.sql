@@ -6,7 +6,7 @@ create table tag
         primary key (id)
 );
 
-create index tag_name_index
+create unique index tag_name_uindex
     on tag (name);
 
 create table ting_tag
