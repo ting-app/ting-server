@@ -19,14 +19,14 @@ public class TingDto {
     @Size(max = 100, message = "标题不能超过100个字符")
     private String title;
 
-    @Size(max = 200, message = "描述不能超过200个字符")
+    @Size(max = 250, message = "描述不能超过250个字符")
     private String description;
 
     @NotBlank(message = "资源文件不能为空")
     private String audioUrl;
 
     @NotBlank(message = "原文不能为空")
-    @Size(max = 2000, message = "原文不能超过2000个字符")
+    @Size(max = 3000, message = "原文不能超过3000个字符")
     private String content;
 
     private Instant createdAt;
