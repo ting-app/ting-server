@@ -1,5 +1,6 @@
 package dekiru.ting.support;
 
+import dekiru.ting.Constant;
 import dekiru.ting.annotation.Me;
 import dekiru.ting.dto.UserDto;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import dekiru.ting.Constant;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -32,8 +32,7 @@ public class CurrentUserHandlerMethodArgumentResolver implements HandlerMethodAr
             @NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpSession session = ((HttpServletRequest) webRequest.getNativeRequest()).getSession();
-        UserDto user = (UserDto) session.getAttribute(Constant.ME);
 
-        return user;
+        return session.getAttribute(Constant.ME);
     }
 }
