@@ -1,7 +1,12 @@
 package dekiru.ting.controller;
 
+import dekiru.ting.Constant;
+import dekiru.ting.annotation.LoginRequired;
+import dekiru.ting.annotation.Me;
 import dekiru.ting.dto.ProgramDto;
+import dekiru.ting.dto.ResponseError;
 import dekiru.ting.dto.UserDto;
+import dekiru.ting.entity.Program;
 import dekiru.ting.repository.ProgramRepository;
 import dekiru.ting.repository.extend.ProgramRepositoryExtend;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +20,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import dekiru.ting.Constant;
-import dekiru.ting.annotation.LoginRequired;
-import dekiru.ting.annotation.Me;
-import dekiru.ting.dto.ResponseError;
-import dekiru.ting.entity.Program;
 
 import javax.validation.Valid;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -49,7 +48,8 @@ public class ProgramController extends BaseController {
     @LoginRequired
     public List<ProgramDto> getMyPrograms(@Me UserDto me) {
         List<Program> programs = programRepository.findByCreatedBy(me.getId());
-        List<ProgramDto> programDtos = programs.stream()
+
+        return programs.stream()
                 .map(program -> {
                     ProgramDto programDto = new ProgramDto();
                     programDto.setId(program.getId());
@@ -64,8 +64,6 @@ public class ProgramController extends BaseController {
                     return programDto;
                 })
                 .collect(Collectors.toList());
-
-        return programDtos;
     }
 
     /**
@@ -101,7 +99,7 @@ public class ProgramController extends BaseController {
                     HttpStatus.BAD_REQUEST);
         }
 
-        List<Program> programs = new ArrayList<>();
+        List<Program> programs;
 
         if (me == null) {
             // Anonymous user, get all visible programs

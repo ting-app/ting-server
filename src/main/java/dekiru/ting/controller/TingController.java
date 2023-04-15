@@ -1,16 +1,24 @@
 package dekiru.ting.controller;
 
+import dekiru.ting.Constant;
+import dekiru.ting.annotation.LoginRequired;
+import dekiru.ting.annotation.Me;
 import dekiru.ting.config.AwsS3Config;
+import dekiru.ting.dto.ResponseError;
 import dekiru.ting.dto.TagDto;
+import dekiru.ting.dto.TingDto;
 import dekiru.ting.dto.UserDto;
 import dekiru.ting.entity.BaseEntity;
+import dekiru.ting.entity.Program;
 import dekiru.ting.entity.Tag;
 import dekiru.ting.entity.Ting;
+import dekiru.ting.entity.TingTag;
 import dekiru.ting.repository.ProgramRepository;
 import dekiru.ting.repository.TagRepository;
 import dekiru.ting.repository.TingRepository;
 import dekiru.ting.repository.TingTagRepository;
 import dekiru.ting.repository.extend.TingRepositoryExtend;
+import dekiru.ting.service.AwsS3Service;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,19 +31,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import dekiru.ting.Constant;
-import dekiru.ting.annotation.LoginRequired;
-import dekiru.ting.annotation.Me;
-import dekiru.ting.dto.ResponseError;
-import dekiru.ting.dto.TingDto;
-import dekiru.ting.entity.Program;
-import dekiru.ting.entity.TingTag;
-import dekiru.ting.service.AwsS3Service;
 
 import javax.validation.Valid;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -211,7 +210,7 @@ public class TingController extends BaseController {
             tingDto.setAudioUrl(ting.getAudioUrl());
         }
 
-        setTags(Arrays.asList(tingDto));
+        setTags(List.of(tingDto));
 
         return new ResponseEntity<>(tingDto, HttpStatus.OK);
     }
