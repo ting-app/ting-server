@@ -26,7 +26,7 @@ Server side code of [Ting](https://ting.dekiru.app).
 2. Amazon Simple Email Service
     1. Add a verified identity
 3. AWS IAM User
-    1. Create an IAM user that has the permission
+    1. Create an IAM user that has the permission:
        ```
        {
             "Version": "2012-10-17",
